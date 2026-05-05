@@ -13,7 +13,7 @@ export default function FilterBar() {
   const employees = useMemo(() => getUniqueEmployees(rawData), [rawData]);
   const rtsCodes = useMemo(() => getUniqueRTSCodes(rawData), [rawData]);
 
-  const hasFilters = filters.employee || filters.search || filters.dateRange || filters.rtsCodes.length > 0;
+  const hasFilters = filters.employee || filters.search || filters.dateRange || filters.rtsCodes.length > 0 || filters.impactDcr;
 
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -40,9 +40,9 @@ export default function FilterBar() {
       ? new Date(parts[0], parts[1] - 1, parts[2])
       : null;
     const startDate = filters.dateRange?.[0] || null;
-    // If end date equals start date, store as-is (inclusive). Otherwise add +1 for exclusive upper bound.
+    // Store end date as exclusive upper bound (selected date + 1 day).
     const endDate = selectedDate
-      ? (startDate && isSameDay(selectedDate, startDate) ? selectedDate : new Date(selectedDate.getTime() + 86400000))
+      ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1)
       : null;
     setFilters({
       dateRange: endDate ? [startDate, endDate] : [startDate, null],
@@ -59,7 +59,7 @@ export default function FilterBar() {
   const displayEndDate = (d: Date): string => {
     const startDate = filters.dateRange?.[0];
     if (startDate && isSameDay(d, startDate)) return toInputDate(d);
-    return toInputDate(new Date(d.getTime() - 86400000));
+    return toInputDate(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1));
   };
 
   const toggleRTSCode = (code: string) => {
@@ -151,10 +151,31 @@ export default function FilterBar() {
               >
                 {code}
               </motion.button>
+             ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground">Impact DCR:</span>
+          <div className="flex gap-1">
+            {['All', 'Y', 'N'].map(val => (
+               <motion.button
+                key={val}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setFilters({ impactDcr: val === 'All' ? '' : val })}
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
+                  (val === 'All' && !filters.impactDcr) || filters.impactDcr === val
+                    ? 'bg-rts-active-bg text-rts-active-text'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {val}
+              </motion.button>
             ))}
           </div>
         </div>
- 
+
         {hasFilters && (
           <motion.button
             whileHover={{ scale: 1.05 }}

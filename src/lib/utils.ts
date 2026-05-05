@@ -5,66 +5,6 @@ export interface PieDataItem {
   value: number;
 }
 
-export interface ChartThemeColors {
-  tooltipBg: string;
-  tooltipBorder: string;
-  tooltipText: string;
-  tooltipMuted: string;
-  tooltipHoverBg: string;
-  tooltipHoverBorder: string;
-  axisText: string;
-  axisLine: string;
-  gridLine: string;
-  pieBorder: string;
-  pieLabel: string;
-  pieLabelName: string;
-  pieLine: string;
-  zoomBorder: string;
-  zoomFill: string;
-}
-
-function toRgba(v: string, alpha?: number): string {
-  const trimmed = v.trim();
-  if (!trimmed) return 'transparent';
-
-  const rgbaMatch = trimmed.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*[\d.]+\s*)?\)/);
-  if (rgbaMatch) {
-    const [, r, g, b] = rgbaMatch;
-    if (alpha !== undefined) return `rgba(${r},${g},${b},${alpha})`;
-    return trimmed;
-  }
-
-  const parts = trimmed.split(/\s+/);
-  if (parts.length >= 3 && alpha !== undefined) {
-    return `rgba(${parts.slice(0, 3).join(',')},${alpha})`;
-  }
-  if (parts.length === 4) return `rgba(${parts.join(',')})`;
-  if (parts.length === 3) return `rgb(${parts.join(',')})`;
-  return trimmed;
-}
-
-export function getChartTheme(): ChartThemeColors {
-  const s = getComputedStyle(document.documentElement);
-  const get = (v: string) => s.getPropertyValue(v).trim();
-  return {
-    tooltipBg: toRgba(get('--chart-tooltip-bg-alpha')),
-    tooltipBorder: toRgba(get('--chart-tooltip-border')),
-    tooltipText: toRgba(get('--chart-tooltip-text')),
-    tooltipMuted: toRgba(get('--chart-tooltip-muted')),
-    tooltipHoverBg: toRgba(get('--chart-tooltip-hover-bg'), 0.9),
-    tooltipHoverBorder: toRgba(get('--chart-tooltip-hover-border'), 0.3),
-    axisText: toRgba(get('--chart-axis-text')),
-    axisLine: toRgba(get('--chart-axis-line'), 0.3),
-    gridLine: toRgba(get('--chart-grid-line')),
-    pieBorder: toRgba(get('--chart-pie-border')),
-    pieLabel: toRgba(get('--chart-pie-label')),
-    pieLabelName: toRgba(get('--chart-pie-label-name')),
-    pieLine: toRgba(get('--chart-pie-line')),
-    zoomBorder: toRgba(get('--chart-zoom-border')),
-    zoomFill: toRgba(get('--chart-zoom-fill')),
-  };
-}
-
 export interface BarChartDataItem {
   date: string;
   counts: Record<string, number>;
@@ -109,7 +49,10 @@ export function getBarChartData(data: RTSDataRow[]): BarChartDataItem[] {
 
   for (const row of data) {
     if (!row.normalizedDate) continue;
-    const dateStr = row.normalizedDate.toISOString().split('T')[0];
+    const y = String(row.normalizedDate.getFullYear()).padStart(4, '0');
+    const m = String(row.normalizedDate.getMonth() + 1).padStart(2, '0');
+    const d = String(row.normalizedDate.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`;
     const existing = dateCounts.get(dateStr) || { counts: {}, total: 0 };
     
     const code = row.rtsCode;

@@ -4,28 +4,25 @@ import { motion } from 'framer-motion';
 import { useDashboardStore } from '../store/useDashboardStore';
 import { useChartTheme } from '../hooks/useChartTheme';
 import { getRTSDistribution } from '../lib/utils';
-import { getRTSColor } from '../lib/colors';
+import { assignColors } from '../lib/colors';
 
 export default function RTSPieChart() {
   const filteredData = useDashboardStore(s => s.filteredData);
-  const theme = useChartTheme();
+  const { colors, theme: chartTheme } = useChartTheme();
 
   const pieData = useMemo(() => getRTSDistribution(filteredData), [filteredData]);
   const total = useMemo(() => pieData.reduce((sum, d) => sum + d.value, 0), [pieData]);
+  const colorMap = useMemo(() => assignColors(pieData.map(d => d.name)), [pieData]);
 
   const option = useMemo(() => ({
     tooltip: {
       trigger: 'item',
       formatter: (params: { name: string; value: number }) => {
         const pct = total > 0 ? ((params.value / total) * 100).toFixed(1) : 0;
-        return `<div style="font-weight:600;margin-bottom:4px;color:${theme.tooltipText};">${params.name}</div>
-                <div style="color:${theme.tooltipMuted};">Count: <strong style="color:${theme.tooltipText};">${params.value}</strong></div>
-                <div style="color:${theme.tooltipMuted};">Percentage: <strong style="color:${theme.tooltipText};">${pct}%</strong></div>`;
+        return `<div style="font-weight:600;margin-bottom:4px;color:${colors.tooltip.text};">${params.name}</div>
+                <div style="color:${colors.tooltip.muted};">Count: <strong style="color:${colors.tooltip.text};">${params.value}</strong></div>
+                <div style="color:${colors.tooltip.muted};">Percentage: <strong style="color:${colors.tooltip.text};">${pct}%</strong></div>`;
       },
-      backgroundColor: theme.tooltipBg,
-      borderColor: theme.tooltipBorder,
-      borderWidth: 1,
-      textStyle: { color: theme.tooltipText, fontSize: 13 },
     },
     legend: {
       show: false,
@@ -36,38 +33,30 @@ export default function RTSPieChart() {
       radius: ['40%', '65%'],
       center: ['50%', '50%'],
       avoidLabelOverlap: true,
+      padAngle: 1,
+      minAngle: 1,
       itemStyle: {
         borderRadius: 6,
-        borderColor: theme.pieBorder,
-        borderWidth: 2,
+        borderWidth: 0,
+        borderColor: 'transparent',
       },
-      label: {
-        show: true,
-        position: 'outside',
-        fontSize: 10,
-        color: theme.pieLabel,
-        formatter: (params: { name: string; percent: number }) =>
-          params.percent > 1 ? `{name|${params.name}}\n{pct|${params.percent.toFixed(1)}%}` : '',
-        rich: {
-          name: { fontSize: 10, color: theme.pieLabelName, lineHeight: 14 },
-          pct: { fontSize: 9, color: theme.pieLabel, lineHeight: 12 },
-        },
-      },
+       label: {
+         show: true,
+         position: 'outside',
+         fontSize: 10,
+         minShowLabelAngle: 0,
+         textStyle: {
+           color: colors.pie.label,
+         },
+         formatter: (params: { name: string; percent: number }) =>
+           `${params.name}\n${params.percent.toFixed(1)}%`,
+       },
       labelLine: {
         show: true,
         length: 20,
         length2: 30,
         smooth: true,
-        lineStyle: { color: theme.pieLine, width: 1 },
-      },
-      emphasis: {
-        scale: true,
-        scaleSize: 10,
-        itemStyle: {
-          shadowBlur: 25,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)',
-        },
+        lineStyle: { color: colors.pie.line, width: 1 },
       },
       animationType: 'scale',
       animationEasing: 'elasticOut',
@@ -75,13 +64,13 @@ export default function RTSPieChart() {
       data: pieData.map((d) => ({
         ...d,
         itemStyle: {
-          color: getRTSColor(d.name),
+          color: colorMap.get(d.name),
         },
       })),
     }],
     animationDuration: 800,
     animationEasing: 'cubicOut',
-  }), [pieData, total, theme]);
+  }), [pieData, total, colors, colorMap]);
 
   return (
     <motion.div
@@ -98,8 +87,10 @@ export default function RTSPieChart() {
       </div>
       <ReactECharts
         option={option}
+        theme={chartTheme}
         style={{ height: 350, width: '100%' }}
         opts={{ renderer: 'canvas' }}
+        notMerge={true}
         showLoading={false}
       />
     </motion.div>

@@ -80,6 +80,7 @@ export default function CSVUpload({ compact = false }: CSVUploadProps) {
 
   const processFiles = useCallback((files: FileList | File[]) => {
     setErrorState(null);
+    rowCounter = 0;
     const fileArray = Array.from(files).filter(
       f => f.type === 'text/csv' || f.name.endsWith('.csv')
     );

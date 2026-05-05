@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDashboardStore } from '../store/useDashboardStore';
-import { Search, ChevronUp, ChevronDown, ChevronsUp } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, ChevronsUp, Download } from 'lucide-react';
 import type { RTSDataRow } from '../types';
 
 interface SortConfig {
@@ -75,6 +75,27 @@ export default function DetailTable() {
 
   const hasSearchFilter = Boolean(columnFilter._global);
 
+  const handleExportCSV = useCallback(() => {
+    const headers = COLUMNS.map(col => col.label);
+    const csvRows = [
+      headers.join(','),
+      ...sortedData.map(row =>
+        COLUMNS.map(col => {
+          const val = String(row[col.key as keyof RTSDataRow] ?? '');
+          return '"' + val.replace(/"/g, '""') + '"';
+        }).join(',')
+      ),
+    ];
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `rts-details-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [sortedData]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -102,6 +123,13 @@ export default function DetailTable() {
               {hasSearchFilter && (
                 <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] text-primary-foreground">1</span>
               )}
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 rounded-md bg-card px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-border"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export CSV
             </button>
           </div>
         </div>
@@ -141,8 +169,8 @@ export default function DetailTable() {
  
       <div className="max-h-[500px] overflow-y-auto">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 z-10">
-            <tr className="border-b border-border bg-card backdrop-blur-sm">
+           <thead className="sticky top-0 z-20 bg-[hsl(var(--card))]">
+             <tr className="border-b border-border text-muted-foreground">
               {COLUMNS.map(col => (
                 <th
                   key={col.key}

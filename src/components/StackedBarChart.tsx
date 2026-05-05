@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useDashboardStore } from '../store/useDashboardStore';
 import { useChartTheme } from '../hooks/useChartTheme';
 import { getBarChartData } from '../lib/utils';
-import { getRTSColor } from '../lib/colors';
+import { assignColors } from '../lib/colors';
 
 export default function StackedBarChart() {
   const filteredData = useDashboardStore(s => s.filteredData);
@@ -25,22 +25,24 @@ export default function StackedBarChart() {
     return Array.from(allCodes).sort();
   }, [barData]);
 
+  const colorMap = useMemo(() => assignColors(codes), [codes]);
+
   const series = useMemo(() => {
-    return codes.map((code, i) => ({
+    return codes.map((code) => ({
       name: code,
       type: 'bar' as const,
       stack: 'total',
       emphasis: { focus: 'series' as const },
       data: barData.map(d => d.counts[code] || 0),
       itemStyle: {
-        color: getRTSColor(code),
-        borderRadius: i === codes.length - 1 ? [4, 4, 0, 0] : undefined,
+        color: colorMap.get(code),
+        borderRadius: 2,
       },
       barWidth: '60%',
     }));
-  }, [barData, codes]);
+  }, [barData, codes, colorMap]);
 
-  const theme = useChartTheme();
+  const { colors, theme: chartTheme } = useChartTheme();
 
   useEffect(() => {
     const chart = chartRef.current?.getEchartsInstance();
@@ -96,29 +98,25 @@ export default function StackedBarChart() {
   const option = useMemo(() => ({
     tooltip: {
       trigger: 'axis',
-      backgroundColor: theme.tooltipBg,
-      borderColor: theme.tooltipBorder,
-      borderWidth: 1,
-      textStyle: { color: theme.tooltipText, fontSize: 13 },
       formatter: (params: { axisValue?: string; seriesName?: string; value?: number; marker?: string; color?: string }[]) => {
         const date = (params[0]?.axisValue as string) || '';
-        const hovered = hoveredSeries.current;
-        let html = `<div style="font-weight:600;margin-bottom:6px;color:${theme.tooltipText};">${date}</div>`;
+
+        let html = `<div style="font-weight:600;margin-bottom:6px;color:${colors.tooltip.text};">${date}</div>`;
         for (const p of params) {
-          const isHovered = p.seriesName === hovered;
-          const rowColor = isHovered ? theme.tooltipText : theme.tooltipMuted;
+          const isHovered = p.seriesName === hoveredSeries.current;
+          const rowColor = isHovered ? colors.tooltip.text : colors.tooltip.muted;
           const fontWeight = isHovered ? '600' : '400';
-          const bgColor = isHovered ? theme.tooltipHoverBg : 'transparent';
-          const borderColor = isHovered ? theme.tooltipHoverBorder : 'transparent';
+          const bgColor = isHovered ? colors.tooltip.hoverBg : 'transparent';
+          const borderColor = isHovered ? colors.tooltip.hoverBorder : 'transparent';
           const dotColor = p.color || '';
-          html += `<div style="display:flex;justify-content:space-between;gap:16px;color:${rowColor};font-weight:${fontWeight};background:${bgColor};border-left:2px solid ${borderColor};padding:2px 6px;">
-            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${dotColor};margin-right:6px;"></span>${p.seriesName}:</span>
+          html += `<div style="display:flex;justify-content:space-between;gap:16px;color:${rowColor};font-weight:${fontWeight};background:${bgColor};border-left:3px solid ${borderColor};padding:2px 6px;margin:1px 0;">
+            <span style="display:flex;align-items:center;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${dotColor};margin-right:6px;"></span>${p.seriesName}:</span>
             <strong style="color:${rowColor};">${p.value}</strong>
           </div>`;
         }
         const row = barData.find(d => d.date === date);
         if (row) {
-          html += `<div style="border-top:1px solid ${theme.axisLine};margin-top:6px;padding-top:4px;font-weight:600;color:${theme.tooltipText};">
+          html += `<div style="border-top:1px solid ${colors.axisLine};margin-top:6px;padding-top:4px;font-weight:600;color:${colors.tooltip.text};">
             Total RTS: ${row.total}
           </div>`;
         }
@@ -132,7 +130,6 @@ export default function StackedBarChart() {
       data: dates,
       axisLabel: {
         fontSize: 11,
-        color: theme.axisText,
         rotate: 45,
         interval: 'auto',
         formatter: (val: string) => {
@@ -141,13 +138,11 @@ export default function StackedBarChart() {
           return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         },
       },
-      axisLine: { lineStyle: { color: theme.axisLine } },
       axisTick: { show: false },
     },
     yAxis: {
       type: 'value' as const,
-      axisLabel: { fontSize: 11, color: theme.axisText },
-      splitLine: { lineStyle: { color: theme.gridLine, type: 'dashed' } },
+      axisLabel: { fontSize: 11 },
       axisLine: { show: false },
     },
     dataZoom: [
@@ -159,13 +154,11 @@ export default function StackedBarChart() {
         bottom: 10,
         height: 20,
         handleSize: '80%',
-        borderColor: theme.zoomBorder,
-        fillerColor: theme.zoomFill,
       },
       { type: 'inside' as const, xAxisIndex: [0], start: 0, end: 100 },
     ],
     series,
-  }), [barData, dates, series, theme]);
+  }), [barData, dates, series, colors]);
 
   return (
     <motion.div
@@ -183,6 +176,7 @@ export default function StackedBarChart() {
       <ReactECharts
         ref={chartRef}
         option={option}
+        theme={chartTheme}
         style={{ height: 320, width: '100%' }}
         opts={{ renderer: 'canvas' }}
       />

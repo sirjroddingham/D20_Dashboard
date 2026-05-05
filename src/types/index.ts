@@ -17,4 +17,5 @@ export interface DashboardFilters {
   employee: string;
   search: string;
   rtsCodes: string[];
+  impactDcr: string;
 }

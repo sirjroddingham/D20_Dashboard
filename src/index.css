@@ -62,8 +62,8 @@
   --chart-axis-line: 203 213 225;
   --chart-grid-line: rgba(203, 213, 225, 0.4);
   --chart-pie-border: 226 232 240;
-  --chart-pie-label: 100 116 139;
-  --chart-pie-label-name: 51 65 85;
+  --chart-pie-label: rgb(0, 0, 0);
+  --chart-pie-label-name: rgb(0, 0, 0);
   --chart-pie-line: 148 163 184;
   --chart-zoom-border: rgba(148, 163, 184, 0.4);
   --chart-zoom-fill: rgba(59, 130, 246, 0.15);
@@ -117,8 +117,8 @@
   --chart-axis-line: 42 47 69;
   --chart-grid-line: rgba(42, 47, 69, 0.15);
   --chart-pie-border: 22 25 37;
-  --chart-pie-label: 107 115 148;
-  --chart-pie-label-name: 200 207 216;
+  --chart-pie-label: rgb(255, 255, 255);
+  --chart-pie-label-name: rgb(255, 255, 255);
   --chart-pie-line: 59 63 84;
   --chart-zoom-border: rgba(42, 47, 69, 0.4);
   --chart-zoom-fill: rgba(30, 58, 95, 0.3);

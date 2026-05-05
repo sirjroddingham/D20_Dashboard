@@ -36,6 +36,7 @@ function applyFilters(rawData: RTSDataRow[], filters: DashboardFilters): RTSData
       if (!searchable.includes(search)) return false;
     }
     if (filters.rtsCodes.length > 0 && !filters.rtsCodes.includes(row.rtsCode)) return false;
+    if (filters.impactDcr && row.impactDcr !== filters.impactDcr) return false;
     return true;
   });
 }
@@ -50,6 +51,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     employee: '',
     search: '',
     rtsCodes: [],
+    impactDcr: '',
   },
 
   setRawData: (data) => {
@@ -70,7 +72,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   resetFilters: () => {
     const state = get();
     set({
-      filters: { dateRange: null, employee: '', search: '', rtsCodes: [] },
+      filters: { dateRange: null, employee: '', search: '', rtsCodes: [], impactDcr: '' },
       filteredData: state.rawData,
     });
   },
@@ -79,7 +81,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     set({
       rawData: [],
       filteredData: [],
-      filters: { dateRange: null, employee: '', search: '', rtsCodes: [] },
+      filters: { dateRange: null, employee: '', search: '', rtsCodes: [], impactDcr: '' },
       fileName: '',
     });
   },
