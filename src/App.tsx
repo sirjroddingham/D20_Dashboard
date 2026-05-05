@@ -18,7 +18,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-surface-0">
-      <header className="border-b border-surface-3 sticky top-0 z-50 bg-surface-0/90 backdrop-blur-md">
+      <header className="border-b border-surface-3 sticky top-0 z-50 header-card backdrop-blur-md">
         <div className="mx-auto max-w-[1600px] px-4 py-3 sm:px-6">
            <div className="flex items-center justify-between">
              <div className="flex items-center gap-3">
@@ -88,7 +88,7 @@ function Dashboard() {
         </AnimatePresence>
       </main>
 
-      <footer className="border-t border-surface-3 py-3 bg-surface-0/50 backdrop-blur-sm">
+      <footer className="border-t border-surface-3 py-3 footer-card backdrop-blur-sm">
         <div className="mx-auto max-w-[1600px] px-4 text-center text-xs text-text-faint">
           RTS Dashboard &middot; D20 Industries, LLC
         </div>

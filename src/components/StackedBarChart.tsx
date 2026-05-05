@@ -165,7 +165,7 @@ export default function StackedBarChart() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className="rounded-lg border border-border bg-card/50 p-5"
+      className="rounded-lg section-card p-5"
     >
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">Daily RTS Trends</h3>

@@ -23,11 +23,11 @@ export default function Element3() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.15 }}
-      className="rounded-lg border border-border bg-card/50 p-5"
+      className="rounded-lg section-card p-5"
     >
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">Employee Performance Summary</h3>
-        <span className="rounded-full bg-card border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
           {employeeData.length} employees
         </span>
       </div>
@@ -41,10 +41,10 @@ export default function Element3() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={() => handleEmployeeClick(emp.name)}
-                className={`cursor-pointer flex items-center justify-between rounded-md border p-3 transition-colors ${
+                className={`cursor-pointer flex items-center justify-between rounded-md p-3 transition-colors ${
                   isActive
-                    ? 'border-[hsl(var(--ring)/0.3)] bg-card'
-                    : 'border-border bg-background hover:bg-card'
+                    ? 'border-[hsl(var(--ring)/0.3)] surface-elevated'
+                    : 'surface-elevated hover:border-[hsl(var(--ring)/0.2)]'
                 }`}
               >
                 <div className="min-w-0 flex-1">

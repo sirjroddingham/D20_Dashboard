@@ -101,13 +101,13 @@ export default function DetailTable() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
-      className="rounded-lg border border-border bg-card/50 backdrop-blur-sm"
+      className="rounded-lg section-card backdrop-blur-sm"
     >
       <div className="border-b border-border px-5 py-4">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-muted-foreground">Delivery Details</h3>
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-card border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+            <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
               {sortedData.length} records
             </span>
             <button
@@ -115,7 +115,7 @@ export default function DetailTable() {
               className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 showSearch
                   ? 'bg-primary/40 text-primary'
-                  : 'bg-card text-muted-foreground hover:bg-border'
+                  : 'surface-elevated text-muted-foreground hover:bg-border'
               }`}
             >
               <Search className="h-3.5 w-3.5" />
@@ -126,7 +126,7 @@ export default function DetailTable() {
             </button>
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 rounded-md bg-card px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-border"
+              className="flex items-center gap-1.5 rounded-md surface-elevated px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-border"
             >
               <Download className="h-3.5 w-3.5" />
               Export CSV
@@ -169,7 +169,7 @@ export default function DetailTable() {
  
       <div className="max-h-[500px] overflow-y-auto">
         <table className="w-full text-sm">
-           <thead className="sticky top-0 z-20 bg-[hsl(var(--card))]">
+           <thead className="sticky top-0 z-20 surface-elevated">
              <tr className="border-b border-border text-muted-foreground">
               {COLUMNS.map(col => (
                 <th
@@ -216,7 +216,7 @@ export default function DetailTable() {
                         ? 'bg-destructive/20 text-destructive'
                         : row.rtsCode === 'NO RTS CODE SELECTED'
                         ? 'bg-secondary/20 text-secondary'
-                        : 'bg-card text-muted-foreground'
+                         : 'surface-elevated text-muted-foreground'
                     }`}>
                       {row.rtsCode}
                     </span>

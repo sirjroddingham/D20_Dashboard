@@ -77,11 +77,11 @@ export default function RTSPieChart() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className="rounded-lg border border-border bg-card/50 p-5"
+      className="rounded-lg section-card p-5"
     >
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">RTS Code Distribution</h3>
-        <span className="rounded-full bg-card border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
           {total} total
         </span>
       </div>

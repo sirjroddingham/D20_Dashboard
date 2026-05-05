@@ -70,6 +70,13 @@
 
   --rts-active-bg: 37 91% 67%;
   --rts-active-text: 0 0% 100%;
+
+  --surface-card-bg: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 5% 98.5%) 100%);
+  --surface-card-border: hsl(214 32% 88%);
+  --surface-elevated-bg: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 8% 99%) 100%);
+  --surface-elevated-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --header-bg: linear-gradient(180deg, hsl(210 5% 98%) 0%, hsl(0 0% 100%) 100%);
+  --footer-bg: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 5% 98%) 100%);
 }
 
 [data-theme="dark"] {
@@ -125,9 +132,34 @@
 
   --rts-active-bg: 212 55% 60%;
   --rts-active-text: 222 26% 11%;
+
+  --surface-card-bg: linear-gradient(180deg, hsl(220 28% 16%) 0%, hsl(222 26% 11%) 100%);
+  --surface-card-border: hsl(222 26% 26%);
+  --surface-elevated-bg: linear-gradient(180deg, hsl(220 30% 20%) 0%, hsl(220 28% 16%) 100%);
+  --surface-elevated-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --header-bg: linear-gradient(180deg, hsl(222 28% 13%) 0%, hsl(222 26% 11%) 100%);
+  --footer-bg: linear-gradient(180deg, hsl(222 26% 11%) 0%, hsl(222 28% 13%) 100%);
 }
 
 @layer base {
+  .section-card {
+    border: 1px solid var(--surface-card-border);
+    background: var(--surface-card-bg);
+  }
+
+  .surface-elevated {
+    background: var(--surface-elevated-bg);
+    box-shadow: var(--surface-elevated-shadow);
+  }
+
+  .header-card {
+    background: var(--header-bg);
+  }
+
+  .footer-card {
+    background: var(--footer-bg);
+  }
+
   * {
     border-color: hsl(var(--border));
   }
