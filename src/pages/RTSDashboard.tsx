@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText } from 'lucide-react';
+import { FileText, BarChart3 } from 'lucide-react';
 import { useRTSStore } from '../store/useRTSStore';
 import CSVUpload from '../components/CSVUpload';
 import FilterBar from '../components/FilterBar';
@@ -7,7 +7,6 @@ import RTSPieChart from '../components/RTSPieChart';
 import StackedBarChart from '../components/StackedBarChart';
 import Element3 from '../components/Element3';
 import DetailTable from '../components/DetailTable';
-import EmptyState from '../components/EmptyState';
 
 export default function RTSDashboard() {
   const rawData = useRTSStore(s => s.rawData);
@@ -44,7 +43,22 @@ export default function RTSDashboard() {
             transition={{ duration: 0.3 }}
             className="py-8"
           >
-            <EmptyState />
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                className="mb-6 rounded-xl bg-surface-1 border border-surface-3 p-6"
+              >
+                <BarChart3 className="h-16 w-16 text-text-icon" />
+              </motion.div>
+              <h2 className="mb-2 text-2xl font-bold text-text-heading">RTS Management Dashboard</h2>
+              <p className="mb-8 max-w-md text-center text-sm text-text-body">
+                Upload a CSV file to begin analyzing delivery performance, RTS patterns, and employee metrics.
+              </p>
+              <div className="w-full max-w-lg">
+                <CSVUpload onParsed={(data, name) => { setRawData(data); setFileName(name); }} />
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div
