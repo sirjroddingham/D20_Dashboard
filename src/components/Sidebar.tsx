@@ -5,8 +5,7 @@ import {
   UserCircle, 
   FileSpreadsheet, 
   ChevronLeft, 
-  ChevronRight,
-  Settings
+  ChevronRight
 } from 'lucide-react';
 import { useLayoutStore } from '../store/useLayoutStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -43,7 +42,6 @@ export default function Sidebar() {
     { to: '/', label: 'RTS Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
     { to: '/da-performance', label: 'DA Performance', icon: <UserCircle className="h-5 w-5" /> },
     { to: '/cdf-dsb', label: 'CDF/DSB', icon: <FileSpreadsheet className="h-5 w-5" /> },
-    { to: '/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
   ];
 
   return (
