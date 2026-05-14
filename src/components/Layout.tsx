@@ -10,7 +10,7 @@ export default function Layout() {
       <div className="flex-1 flex flex-col">
         <header className="h-16 border-b border-surface-3 sticky top-0 z-40 header-card backdrop-blur-md flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
-             <img src="/just_the_d20.svg" alt="D20 Industries" className="h-8 w-8" />
+             <img src={`${import.meta.env.BASE_URL}just_the_d20.svg`} alt="D20 Industries" className="h-8 w-8" />
              <span className="text-sm font-medium text-text-heading">D20 Dashboard</span>
           </div>
           <div className="flex items-center gap-3">
