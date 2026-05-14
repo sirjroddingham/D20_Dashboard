@@ -1,8 +1,8 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import { Search, ChevronUp, ChevronDown, ChevronsUp, Download } from 'lucide-react';
-import type { RTSDataRow } from '../types';
+import type { RTSDataRow } from '../lib/rts/types';
 
 interface SortConfig {
   key: string;
@@ -22,7 +22,7 @@ const COLUMNS = [
 const ROWS_PER_PAGE = 50;
 
 export default function DetailTable() {
-  const filteredData = useDashboardStore(s => s.filteredData);
+  const filteredData = useRTSStore(s => s.filteredData);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'plannedDeliveryDate', direction: 'desc' });
   const [page, setPage] = useState(0);
   const [columnFilter, setColumnFilter] = useState<Record<string, string>>({});

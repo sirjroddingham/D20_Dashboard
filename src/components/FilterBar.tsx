@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { Search, X, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import { getUniqueEmployees, getUniqueRTSCodes } from '../lib/utils';
 
 export default function FilterBar() {
-  const filters = useDashboardStore(s => s.filters);
-  const rawData = useDashboardStore(s => s.rawData);
-  const setFilters = useDashboardStore(s => s.setFilters);
-  const resetFilters = useDashboardStore(s => s.resetFilters);
+  const filters = useRTSStore(s => s.filters);
+  const rawData = useRTSStore(s => s.rawData);
+  const setFilters = useRTSStore(s => s.setFilters);
+  const resetFilters = useRTSStore(s => s.resetFilters);
 
   const employees = useMemo(() => getUniqueEmployees(rawData), [rawData]);
   const rtsCodes = useMemo(() => getUniqueRTSCodes(rawData), [rawData]);

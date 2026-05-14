@@ -12,7 +12,7 @@ export interface RTSDataRow {
   normalizedDate: Date | null;
 }
 
-export interface DashboardFilters {
+export interface RTSFilters {
   dateRange: [Date | null, Date | null] | null;
   employee: string;
   search: string;

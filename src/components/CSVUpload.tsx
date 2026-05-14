@@ -2,12 +2,13 @@ import { useCallback, useRef, useState } from 'react';
 import Papa from 'papaparse';
 import { Upload, FileSpreadsheet, AlertCircle, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import { mapCsvHeaders, parseDate, normalizeRTSCode } from '../lib/headerMap';
-import type { RTSDataRow } from '../types';
+import type { RTSDataRow } from '../lib/rts/types';
 
 interface CSVUploadProps {
   compact?: boolean;
+  onParsed?: (data: RTSDataRow[], fileName: string) => void;
 }
 
 interface ParseResult {
@@ -72,9 +73,9 @@ function parseSingleCsv(csvText: string, fileName: string): ParseResult {
   return { data, warnings, fileName };
 }
 
-export default function CSVUpload({ compact = false }: CSVUploadProps) {
-  const setRawData = useDashboardStore(s => s.setRawData);
-  const setFileName = useDashboardStore(s => s.setFileName);
+export default function CSVUpload({ compact = false, onParsed }: CSVUploadProps) {
+  const setRawData = useRTSStore(s => s.setRawData);
+  const setFileName = useRTSStore(s => s.setFileName);
   const [error, setErrorState] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -124,10 +125,15 @@ export default function CSVUpload({ compact = false }: CSVUploadProps) {
       const combinedName = fileArray.length === 1
         ? fileArray[0].name
         : `${fileArray.length} files (${allData.length} rows)`;
-      setFileName(combinedName);
-      setRawData(allData);
+      
+      if (onParsed) {
+        onParsed(allData, combinedName);
+      } else {
+        setFileName(combinedName);
+        setRawData(allData);
+      }
     });
-  }, [setRawData, setFileName]);
+  }, [setRawData, setFileName, onParsed]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();

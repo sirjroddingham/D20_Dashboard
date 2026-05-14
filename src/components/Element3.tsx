@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import { getEmployeeSummary } from '../lib/utils';
 
 export default function Element3() {
-  const filteredData = useDashboardStore(s => s.filteredData);
-  const filters = useDashboardStore(s => s.filters);
-  const setFilters = useDashboardStore(s => s.setFilters);
+  const filteredData = useRTSStore(s => s.filteredData);
+  const filters = useRTSStore(s => s.filters);
+  const setFilters = useRTSStore(s => s.setFilters);
 
   const employeeData = useMemo(() => getEmployeeSummary(filteredData), [filteredData]);
 

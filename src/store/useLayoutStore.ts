@@ -7,7 +7,7 @@ interface LayoutState {
   setSidebarOpen: (open: boolean) => void;
 }
 
-export const useLayoutStore = create<LayoutState>()
+export const useLayoutStore = create<LayoutState>()(
   persist(
     (set) => ({
       isSidebarOpen: true,

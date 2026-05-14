@@ -60,7 +60,7 @@ export default function Sidebar() {
             className="font-bold text-text-heading truncate"
           >
             D20 Dashboard
-    </motion.aside>
+          </motion.div>
         )}
         <button 
           onClick={toggleSidebar}
@@ -79,6 +79,6 @@ export default function Sidebar() {
           />
         ))}
       </nav>
-    </motion.div>
+    </motion.aside>
   );
 }

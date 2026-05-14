@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText } from 'lucide-react';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import CSVUpload from '../components/CSVUpload';
 import FilterBar from '../components/FilterBar';
 import RTSPieChart from '../components/RTSPieChart';
@@ -10,9 +10,11 @@ import DetailTable from '../components/DetailTable';
 import EmptyState from '../components/EmptyState';
 
 export default function RTSDashboard() {
-  const rawData = useDashboardStore(s => s.rawData);
-  const fileName = useDashboardStore(s => s.fileName);
-  const filteredData = useDashboardStore(s => s.filteredData);
+  const rawData = useRTSStore(s => s.rawData);
+  const fileName = useRTSStore(s => s.fileName);
+  const filteredData = useRTSStore(s => s.filteredData);
+  const setRawData = useRTSStore(s => s.setRawData);
+  const setFileName = useRTSStore(s => s.setFileName);
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4">
@@ -26,7 +28,10 @@ export default function RTSDashboard() {
              </div>
            )}
         </div>
-        <CSVUpload compact />
+        <CSVUpload compact onParsed={(data, name) => {
+  setRawData(data);
+  setFileName(name);
+}} />
       </div>
 
       <AnimatePresence mode="wait">

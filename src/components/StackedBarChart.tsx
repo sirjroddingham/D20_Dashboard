@@ -1,15 +1,15 @@
 import { useMemo, useRef, useEffect, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import { useChartTheme } from '../hooks/useChartTheme';
 import { getBarChartData } from '../lib/utils';
 import { assignColors } from '../lib/colors';
 
 export default function StackedBarChart() {
-  const filteredData = useDashboardStore(s => s.filteredData);
-  const filters = useDashboardStore(s => s.filters);
-  const setFilters = useDashboardStore(s => s.setFilters);
+  const filteredData = useRTSStore(s => s.filteredData);
+  const filters = useRTSStore(s => s.filters);
+  const setFilters = useRTSStore(s => s.setFilters);
   const chartRef = useRef<ReactECharts>(null);
   const hoveredSeries = useRef<string | null>(null);
 

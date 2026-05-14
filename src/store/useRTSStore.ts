@@ -1,21 +1,21 @@
 import { create } from 'zustand';
-import type { RTSDataRow, DashboardFilters } from '../types';
+import type { RTSDataRow, RTSFilters } from '../lib/rts/types';
 
-interface DashboardState {
+interface RTSStoreState {
   rawData: RTSDataRow[];
   filteredData: RTSDataRow[];
-  filters: DashboardFilters;
+  filters: RTSFilters;
   isLoading: boolean;
   fileName: string;
 
   setRawData: (data: RTSDataRow[]) => void;
   setFileName: (name: string) => void;
-  setFilters: (filters: Partial<DashboardFilters>) => void;
+  setFilters: (filters: Partial<RTSFilters>) => void;
   resetFilters: () => void;
   clearData: () => void;
 }
 
-function applyFilters(rawData: RTSDataRow[], filters: DashboardFilters): RTSDataRow[] {
+function applyFilters(rawData: RTSDataRow[], filters: RTSFilters): RTSDataRow[] {
   return rawData.filter(row => {
     if (filters.dateRange) {
       if (!row.normalizedDate) return false;
@@ -41,7 +41,7 @@ function applyFilters(rawData: RTSDataRow[], filters: DashboardFilters): RTSData
   });
 }
 
-export const useDashboardStore = create<DashboardState>((set, get) => ({
+export const useRTSStore = create<RTSStoreState>((set, get) => ({
   rawData: [],
   filteredData: [],
   isLoading: false,
@@ -84,5 +84,6 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       filters: { dateRange: null, employee: '', search: '', rtsCodes: [], impactDcr: '' },
       fileName: '',
     });
+
   },
 }));

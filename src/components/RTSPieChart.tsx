@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
-import { useDashboardStore } from '../store/useDashboardStore';
+import { useRTSStore } from '../store/useRTSStore';
 import { useChartTheme } from '../hooks/useChartTheme';
 import { getRTSDistribution } from '../lib/utils';
 import { assignColors } from '../lib/colors';
 
 export default function RTSPieChart() {
-  const filteredData = useDashboardStore(s => s.filteredData);
+  const filteredData = useRTSStore(s => s.filteredData);
   const { colors, theme: chartTheme } = useChartTheme();
 
   const pieData = useMemo(() => getRTSDistribution(filteredData), [filteredData]);

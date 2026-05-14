@@ -1,4 +1,4 @@
-import type { RTSDataRow } from '../types';
+import type { RTSDataRow } from './rts/types';
 
 export interface PieDataItem {
   name: string;
