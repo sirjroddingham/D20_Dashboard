@@ -80,8 +80,8 @@ export default function RTSPieChart() {
       className="rounded-lg section-card p-5"
     >
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">RTS Code Distribution</h3>
-        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <h3 className="text-sm font-medium text-text-subtle">RTS Code Distribution</h3>
+        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-text-subtle">
           {total} total
         </span>
       </div>

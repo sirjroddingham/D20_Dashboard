@@ -168,9 +168,9 @@ export default function StackedBarChart() {
       className="rounded-lg section-card p-5"
     >
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">Daily RTS Trends</h3>
+        <h3 className="text-sm font-medium text-text-subtle">Daily RTS Trends</h3>
       </div>
-      <p className="mb-3 text-xs text-muted-foreground">
+      <p className="mb-3 text-xs text-text-subtle">
         Stacked bars show RTS codes by day. Click a bar to filter to that date.
       </p>
       <ReactECharts

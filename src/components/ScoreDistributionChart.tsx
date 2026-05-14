@@ -10,18 +10,31 @@ interface ScoreDistributionChartProps {
   maxScore: number;
 }
 
-const bucketRanges = [
-  { range: '0-49%', minPct: 0, maxPct: 49, color: '#d32f2f' },
-  { range: '50-59%', minPct: 50, maxPct: 59, color: '#f4511e' },
-  { range: '60-69%', minPct: 60, maxPct: 69, color: '#ff9800' },
-  { range: '70-79%', minPct: 70, maxPct: 79, color: '#fdd835' },
-  { range: '80-89%', minPct: 80, maxPct: 89, color: '#7cb342' },
-  { range: '90-99%', minPct: 90, maxPct: 99.994, color: '#0f9d58' },
-  { range: 'Perfect', minPct: 99.995, maxPct: 100, color: '#067d3c' },
+const bucketDefs = [
+  { range: '0-49%', minPct: 0, maxPct: 49, varName: '--score-critical' },
+  { range: '50-59%', minPct: 50, maxPct: 59, varName: '--score-poor' },
+  { range: '60-69%', minPct: 60, maxPct: 69, varName: '--score-below-avg' },
+  { range: '70-79%', minPct: 70, maxPct: 79, varName: '--score-average' },
+  { range: '80-89%', minPct: 80, maxPct: 89, varName: '--score-good' },
+  { range: '90-99%', minPct: 90, maxPct: 99.994, varName: '--score-excellent' },
+  { range: 'Perfect', minPct: 99.995, maxPct: 100, varName: '--score-perfect' },
 ];
 
+function hslToRgb(hsl: string): string {
+  return `hsl(${hsl})`;
+}
+
+function getBucketColors() {
+  const root = document.documentElement;
+  const styles = getComputedStyle(root);
+  return bucketDefs.map(b => ({
+    ...b,
+    color: hslToRgb(styles.getPropertyValue(b.varName).trim()),
+  }));
+}
+
 function createBuckets(scores: number[], maxScore: number) {
-  const buckets = bucketRanges.map(b => ({ ...b, count: 0 }));
+  const buckets = getBucketColors().map(b => ({ ...b, count: 0 }));
   scores.forEach(score => {
     const pct = (score / maxScore) * 100;
     for (const bucket of buckets) {
@@ -102,14 +115,11 @@ export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistrib
       className="rounded-lg section-card p-3 sm:p-4 flex flex-col h-full min-h-[260px]"
     >
       <div className="shrink-0 mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <h3 className="text-sm font-medium text-text-subtle">{title}</h3>
+        <span className="pill pill-default">
           {total} DAs
         </span>
       </div>
-      {/* Chart area: grows to fill card, but caps at 480px so it doesn't look absurd
-          when the sibling ranking table is extremely tall (e.g. 43 perfect scorers).
-          Centered vertically so it sits nicely in the middle of the available space. */}
       <div className="flex flex-1 items-center justify-center min-h-0">
         <div className="w-full min-h-[240px] max-h-[480px] h-full">
           <ReactECharts

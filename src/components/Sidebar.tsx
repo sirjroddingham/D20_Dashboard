@@ -24,7 +24,7 @@ function NavItem({ to, label, icon, isActive }: NavItemProps) {
       className={`flex items-center gap-3 rounded-md p-2 transition-all duration-200 ${
         isActive 
           ? 'bg-primary/20 text-primary font-medium' 
-          : 'text-text-body hover:bg-surface-hover hover:text-foreground'
+          : 'text-text-body hover:bg-surface-hover hover:text-text-heading'
       }`}
     >
       <span className="flex h-5 w-5 items-center justify-center">{icon}</span>

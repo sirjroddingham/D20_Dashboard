@@ -82,8 +82,8 @@ export default function FilterBar() {
       className="rounded-lg section-card p-4"
     >
       <div className="flex items-center gap-3">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-medium text-muted-foreground">Filters</span>
+        <Filter className="h-4 w-4 text-text-subtle" />
+        <span className="text-sm font-medium text-text-subtle">Filters</span>
         {hasFilters && (
           <motion.span
             initial={{ scale: 0 }}
@@ -97,20 +97,20 @@ export default function FilterBar() {
  
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[180px]">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle" />
           <input
             type="text"
             value={filters.search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search all fields..."
-            className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-md border border-surface-3 bg-surface-0 py-2 pl-9 pr-4 text-sm text-text-heading placeholder:text-text-faint transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
  
         <select
           value={filters.employee}
           onChange={(e) => setFilters({ employee: e.target.value })}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          className="rounded-md border border-surface-3 bg-surface-0 px-3 py-2 text-sm text-text-heading transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         >
           <option value="" style={{ background: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))' }}>All Employees</option>
           {employees.map(emp => (
@@ -123,19 +123,19 @@ export default function FilterBar() {
             type="date"
             value={filters.dateRange?.[0] ? toInputDate(filters.dateRange[0]) : ''}
             onChange={handleDateStartChange}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="rounded-md border border-surface-3 bg-surface-0 px-3 py-2 text-sm text-text-heading transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
-          <span className="text-muted-foreground">to</span>
+          <span className="text-text-subtle">to</span>
           <input
             type="date"
             value={filters.dateRange?.[1] ? displayEndDate(filters.dateRange[1]) : ''}
             onChange={handleDateEndChange}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="rounded-md border border-surface-3 bg-surface-0 px-3 py-2 text-sm text-text-heading transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
  
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground">RTS:</span>
+          <span className="text-xs font-medium text-text-subtle">RTS:</span>
           <div className="flex flex-wrap gap-1">
             {rtsCodes.map(code => (
               <motion.button
@@ -146,7 +146,7 @@ export default function FilterBar() {
                 className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
                   filters.rtsCodes.includes(code)
                     ? 'bg-rts-active-bg text-rts-active-text'
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-text-subtle hover:text-text-heading'
                 }`}
               >
                 {code}
@@ -156,7 +156,7 @@ export default function FilterBar() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground">Impact DCR:</span>
+          <span className="text-xs font-medium text-text-subtle">Impact DCR:</span>
           <div className="flex gap-1">
             {['All', 'Y', 'N'].map(val => (
                <motion.button
@@ -167,7 +167,7 @@ export default function FilterBar() {
                 className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
                   (val === 'All' && !filters.impactDcr) || filters.impactDcr === val
                     ? 'bg-rts-active-bg text-rts-active-text'
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-text-subtle hover:text-text-heading'
                 }`}
               >
                 {val}

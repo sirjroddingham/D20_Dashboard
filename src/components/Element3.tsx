@@ -26,8 +26,8 @@ export default function Element3() {
       className="rounded-lg section-card p-5"
     >
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">Employee Performance Summary</h3>
-        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <h3 className="text-sm font-medium text-text-subtle">Employee Performance Summary</h3>
+        <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-text-subtle">
           {employeeData.length} employees
         </span>
       </div>
@@ -49,19 +49,19 @@ export default function Element3() {
               >
                 <div className="min-w-0 flex-1">
                   <p className={`truncate text-sm font-medium ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground'
+                    isActive ? ' text-text-heading' : 'text-text-subtle'
                   }`}>{emp.name}</p>
-                  <p className="text-xs text-muted-foreground/60">{emp.count} rows</p>
+                  <p className="text-xs text-text-subtle/60">{emp.count} rows</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 overflow-hidden rounded-full bg-muted h-1.5">
+                  <div className="w-12 overflow-hidden rounded-full bg-surface-2 h-1.5">
                     <div
                       className="h-full rounded-full bg-primary transition-all duration-500"
                       style={{ width: `${Math.min(emp.percentage, 100)}%` }}
                     />
                   </div>
                   <span className={`w-10 text-right text-xs font-semibold ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground'
+                    isActive ? ' text-text-heading' : 'text-text-subtle'
                   }`}>{emp.percentage}%</span>
                 </div>
               </motion.div>
@@ -69,7 +69,7 @@ export default function Element3() {
           })}
         </div>
       ) : (
-        <div className="py-8 text-center text-sm text-muted-foreground/60">No employee data available for the current filters.</div>
+        <div className="py-8 text-center text-sm text-text-subtle/60">No employee data available for the current filters.</div>
       )}
     </motion.div>
   );

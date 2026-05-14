@@ -39,7 +39,6 @@ export default function DAPerformance() {
   const fileName = useDAPerformanceStore(s => s.fileName);
   const [selectedWeek, setSelectedWeek] = useState<string>(mostRecentWeek);
 
-  // Auto-select latest week when a new CSV is uploaded
   useEffect(() => {
     if (mostRecentWeek && mostRecentWeek !== selectedWeek) {
       setSelectedWeek(mostRecentWeek);
@@ -53,7 +52,6 @@ export default function DAPerformance() {
 
   const trailingAverages = useDAPerformanceStore(s => s.trailingAverages);
 
-  // Overall scores
   const overallScores = useMemo(
     () =>
       weekRows
@@ -71,7 +69,6 @@ export default function DAPerformance() {
   const topOverall = useMemo(() => getTopN(overallScores, 10, PERFECT_OVERALL), [overallScores]);
   const bottomOverall = useMemo(() => getBottomN(overallScores, 10), [overallScores]);
 
-  // Safety scores
   const safetyWithScores = useMemo(
     () =>
       weekRows
@@ -94,7 +91,6 @@ export default function DAPerformance() {
   const topSafety = useMemo(() => getTopN(safetyWithScores, 10, PERFECT_SAFETY), [safetyWithScores]);
   const bottomSafety = useMemo(() => getBottomN(safetyWithScores, 10), [safetyWithScores]);
 
-  // Quality scores
   const qualityScores = useMemo(
     () =>
       weekRows
@@ -112,7 +108,6 @@ export default function DAPerformance() {
   const topQuality = useMemo(() => getTopN(qualityScores, 10, PERFECT_QUALITY), [qualityScores]);
   const bottomQuality = useMemo(() => getBottomN(qualityScores, 10), [qualityScores]);
 
-  // Quality scores for no-safety-data DAs
   const qualityForNoSafety = useMemo(
     () =>
       safetyNoData.map(r => ({
@@ -124,7 +119,6 @@ export default function DAPerformance() {
     [safetyNoData],
   );
 
-  // Trailing top/bottom 30
   const trailingOverallData = useMemo(
     () =>
       [...trailingAverages].sort((a, b) => b.avgOverallScore - a.avgOverallScore),
@@ -200,7 +194,6 @@ export default function DAPerformance() {
     [trailingQualityData],
   );
 
-  // Distribution chart data
   const overallChartScores = useMemo(() => overallScores.map(s => s.score), [overallScores]);
   const safetyChartScores = useMemo(() => safetyWithScores.map(s => s.score), [safetyWithScores]);
   const qualityChartScores = useMemo(() => qualityScores.map(s => s.score), [qualityScores]);
@@ -246,13 +239,13 @@ export default function DAPerformance() {
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4">
-      <div className="flex items-center justify-between rounded-lg section-card p-4">
+      <div className="flex items-center justify-between rounded-lg bg-surface-1 p-4 border border-surface-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-medium text-foreground">DA Performance</h1>
+          <h1 className="text-lg font-medium text-text-heading">DA Performance</h1>
           {fileName && (
-            <div className="flex items-center gap-2 rounded-md surface-elevated px-3 py-1.5">
-              <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{fileName}</span>
+            <div className="flex items-center gap-2 pill-file">
+              <FileText className="h-3.5 w-3.5 text-text-subtle" />
+              <span className="text-xs text-text-subtle">{fileName}</span>
             </div>
           )}
         </div>
@@ -273,12 +266,12 @@ export default function DAPerformance() {
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                className="mb-6 rounded-xl section-card p-6"
+                className="mb-6 rounded-xl bg-surface-1 border border-surface-3 p-6"
               >
-                <BarChart3 className="h-16 w-16 text-muted-foreground" />
+                <BarChart3 className="h-16 w-16 text-text-icon" />
               </motion.div>
-              <h2 className="mb-2 text-2xl font-bold text-foreground">DA Performance Rankings</h2>
-              <p className="mb-8 max-w-md text-center text-sm text-muted-foreground">
+              <h2 className="mb-2 text-2xl font-bold text-text-heading">DA Performance Rankings</h2>
+              <p className="mb-8 max-w-md text-center text-sm text-text-subtle">
                 Upload one or more Scorecard CSV files to view overall, safety, and quality rankings with trailing averages.
               </p>
               <div className="w-full max-w-lg">
@@ -296,38 +289,38 @@ export default function DAPerformance() {
             className="space-y-4"
           >
             <div className="flex items-center gap-4 rounded-lg section-card p-4">
-              <label className="text-sm font-medium text-muted-foreground">Week:</label>
+              <label className="text-sm font-medium text-text-subtle">Week:</label>
               <select
                 value={selectedWeek}
                 onChange={(e) => setSelectedWeek(e.target.value)}
-                className="rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="rounded-md border border-surface-3 bg-surface-0 px-3 py-1.5 text-sm text-text-heading focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 {loadedWeeks.map(week => (
                   <option key={week} value={week}>{week}</option>
                 ))}
               </select>
-              <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+              <span className="pill pill-default">
                 {weekRows.length} DAs
               </span>
             </div>
 
             {/* === OVERALL === */}
             <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
-              <h2 className="mb-3 sm:mb-4 text-base font-semibold text-foreground">Overall Performance Rankings</h2>
+              <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Overall Performance Rankings</h2>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topOverall.length > 10 ? `Top Overall Performers — All Perfect Scores (${topOverall.length})` : 'Top 10 Overall Performers'}
                     data={toTopRanking(topOverall)}
                     maxScore={100}
-                    titleColor="#4285f4"
+                    titleColor="overall"
                     scoreLabel="Overall Score"
                   />
                   <RankingTable
                     title="Bottom 10 Overall Performers"
                     data={toBottomRanking(bottomOverall)}
                     maxScore={100}
-                    titleColor="#ea4335"
+                    titleColor="bottom"
                     scoreLabel="Overall Score"
                   />
                 </div>
@@ -343,21 +336,21 @@ export default function DAPerformance() {
 
             {/* === SAFETY === */}
             <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
-              <h2 className="mb-3 sm:mb-4 text-base font-semibold text-foreground">Safety Group Rankings</h2>
+              <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Safety Group Rankings</h2>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topSafety.length > 10 ? `Top Safety Performers — All Perfect Scores (${topSafety.length})` : 'Top 10 Safety Performers'}
                     data={toTopRanking(topSafety)}
                     maxScore={STANDARD_SAFETY_WEIGHT}
-                    titleColor="#34a853"
+                    titleColor="safety"
                     scoreLabel="Safety Score"
                   />
                   <RankingTable
                     title="Bottom 10 Safety Performers"
                     data={toBottomRanking(bottomSafety)}
                     maxScore={STANDARD_SAFETY_WEIGHT}
-                    titleColor="#ea4335"
+                    titleColor="bottom"
                     scoreLabel="Safety Score"
                   />
                 </div>
@@ -379,21 +372,21 @@ export default function DAPerformance() {
 
             {/* === QUALITY === */}
             <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
-              <h2 className="mb-3 sm:mb-4 text-base font-semibold text-foreground">Quality Group Rankings</h2>
+              <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Quality Group Rankings</h2>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topQuality.length > 10 ? `Top Quality Performers — All Perfect Scores (${topQuality.length})` : 'Top 10 Quality Performers'}
                     data={toTopRanking(topQuality)}
                     maxScore={STANDARD_QUALITY_WEIGHT}
-                    titleColor="#fbbc04"
+                    titleColor="quality"
                     scoreLabel="Quality Score"
                   />
                   <RankingTable
                     title="Bottom 10 Quality Performers"
                     data={toBottomRanking(bottomQuality)}
                     maxScore={STANDARD_QUALITY_WEIGHT}
-                    titleColor="#ea4335"
+                    titleColor="bottom"
                     scoreLabel="Quality Score"
                   />
                 </div>
@@ -416,29 +409,29 @@ export default function DAPerformance() {
               >
                 <div className="rounded-lg section-card p-3 sm:p-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-6 w-px bg-border" />
-                    <h2 className="text-base font-semibold text-foreground">Trailing Performance Averages</h2>
-                    <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    <div className="h-6 w-px bg-surface-3" />
+                    <h2 className="text-text-subtle text-sm font-medium">Trailing Performance Averages</h2>
+                    <span className="pill pill-default">
                       {loadedWeeks.length} week(s) · Scores averaged · Packages totaled
                     </span>
                   </div>
                 </div>
 
                 <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
-                  <h3 className="text-sm font-semibold text-foreground">Extended Overall Rankings (Top / Bottom 30)</h3>
+                  <h3 className="text-text-subtle text-sm font-medium">Extended Overall Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
                       title={top30Overall.length > 30 ? `Top Overall — All Perfect (${top30Overall.length})` : 'Top 30 Overall'}
                       data={toTrailingRanking(top30Overall)}
                       maxScore={100}
-                      titleColor="#4285f4"
+                      titleColor="overall"
                       scoreLabel="Avg Overall"
                     />
                     <TrailingTable
                       title="Bottom 30 Overall"
                       data={toTrailingRanking(bottom30Overall)}
                       maxScore={100}
-                      titleColor="#ea4335"
+                      titleColor="bottom"
                       scoreLabel="Avg Overall"
                     />
                   </div>
@@ -462,40 +455,40 @@ export default function DAPerformance() {
                 </div>
 
                 <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
-                  <h3 className="text-sm font-semibold text-foreground">Extended Safety Rankings (Top / Bottom 30)</h3>
+                  <h3 className="text-text-subtle text-sm font-medium">Extended Safety Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
                       title={top30Safety.length > 30 ? `Top Safety — All Perfect (${top30Safety.length})` : 'Top 30 Safety'}
                       data={toTrailingRanking(top30Safety)}
                       maxScore={STANDARD_SAFETY_WEIGHT}
-                      titleColor="#34a853"
+                      titleColor="safety"
                       scoreLabel="Avg Safety"
                     />
                     <TrailingTable
                       title="Bottom 30 Safety"
                       data={toTrailingRanking(bottom30Safety)}
                       maxScore={STANDARD_SAFETY_WEIGHT}
-                      titleColor="#ea4335"
+                      titleColor="bottom"
                       scoreLabel="Avg Safety"
                     />
                   </div>
                 </div>
 
                 <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
-                  <h3 className="text-sm font-semibold text-foreground">Extended Quality Rankings (Top / Bottom 30)</h3>
+                  <h3 className="text-text-subtle text-sm font-medium">Extended Quality Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
                       title={top30Quality.length > 30 ? `Top Quality — All Perfect (${top30Quality.length})` : 'Top 30 Quality'}
                       data={toTrailingRanking(top30Quality)}
                       maxScore={STANDARD_QUALITY_WEIGHT}
-                      titleColor="#fbbc04"
+                      titleColor="quality"
                       scoreLabel="Avg Quality"
                     />
                     <TrailingTable
                       title="Bottom 30 Quality"
                       data={toTrailingRanking(bottom30Quality)}
                       maxScore={STANDARD_QUALITY_WEIGHT}
-                      titleColor="#ea4335"
+                      titleColor="bottom"
                       scoreLabel="Avg Quality"
                     />
                   </div>

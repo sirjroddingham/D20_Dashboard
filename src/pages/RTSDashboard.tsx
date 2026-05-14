@@ -21,10 +21,10 @@ export default function RTSDashboard() {
         <div className="flex items-center gap-3">
            <h1 className="text-lg font-medium text-text-heading">RTS Dashboard</h1>
            {fileName && (
-             <div className="flex items-center gap-2 rounded-md bg-surface-0 border border-surface-3 px-3 py-1.5">
-               <FileText className="h-3.5 w-3.5 text-text-body" />
-               <span className="text-xs text-text-subtle">{fileName}</span>
-             </div>
+              <div className="flex items-center gap-2 pill-file">
+                <FileText className="h-3.5 w-3.5 text-text-subtle" />
+                <span className="text-xs text-text-subtle">{fileName}</span>
+              </div>
            )}
         </div>
         <CSVUpload compact onParsed={(data, name) => {
