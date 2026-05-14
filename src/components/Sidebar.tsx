@@ -35,7 +35,7 @@ function NavItem({ to, label, icon, isActive }: NavItemProps) {
 
 export default function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useLayoutStore();
-  const { dark } = useThemeStore();
+  useThemeStore();
   const location = useLocation();
 
   const navItems = [
