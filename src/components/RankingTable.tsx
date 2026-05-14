@@ -56,67 +56,69 @@ export default function RankingTable({
   return (
     <div className="rounded-lg section-card overflow-hidden">
       <div
-        className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white"
+        className="px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white"
         style={{ backgroundColor: titleColor }}
       >
         {title}
       </div>
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="border-b border-border text-muted-foreground">
-            <th className="px-3 py-1.5 text-left font-medium w-8">#</th>
-            <th className="px-3 py-1.5 text-left font-medium">Name</th>
-            <th className="px-3 py-1.5 text-right font-medium">{scoreLabel}</th>
-            <th className="px-3 py-1.5 text-right font-medium">Pkg</th>
-            {showStanding && <th className="px-3 py-1.5 text-center font-medium">Standing</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => {
-            const pct = (item.score / maxScore) * 100;
-            const color = scoreColor(pct);
-            const bg = scoreBgColor(pct);
-            return (
-              <tr
-                key={item.transporterId}
-                className="border-b border-border/30 last:border-b-0"
-                style={{ backgroundColor: bg }}
-              >
-                <td
-                  className="px-3 py-1 font-bold text-white text-center"
-                  style={{ backgroundColor: color }}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-[420px]">
+          <thead>
+            <tr className="border-b border-border text-muted-foreground">
+              <th className="px-2 sm:px-3 py-1.5 text-left font-medium w-8">#</th>
+              <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
+              <th className="px-2 sm:px-3 py-1.5 text-right font-medium">{scoreLabel}</th>
+              <th className="px-2 sm:px-3 py-1.5 text-right font-medium hidden sm:table-cell">Pkg</th>
+              {showStanding && <th className="px-2 sm:px-3 py-1.5 text-center font-medium hidden sm:table-cell">Standing</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item) => {
+              const pct = (item.score / maxScore) * 100;
+              const color = scoreColor(pct);
+              const bg = scoreBgColor(pct);
+              return (
+                <tr
+                  key={item.transporterId}
+                  className="border-b border-border/30 last:border-b-0"
+                  style={{ backgroundColor: bg }}
                 >
-                  {item.rank}
-                </td>
-                <td className="px-3 py-1">
-                  <div className="font-medium text-foreground">{item.name}</div>
-                  <div className="text-[10px] font-mono text-muted-foreground">{item.transporterId}</div>
-                </td>
-                <td
-                  className="px-3 py-1 text-right font-bold text-white"
-                  style={{ backgroundColor: color }}
-                >
-                  {item.score.toFixed(2)}
-                </td>
-                <td className="px-3 py-1 text-right text-foreground tabular-nums">
-                  {item.packages.toLocaleString()}
-                </td>
-                {showStanding && (
-                  <td className="px-3 py-1 text-center">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        standingStyles[item.standing ?? ''] ?? 'text-muted-foreground'
-                      }`}
-                    >
-                      {item.standing ?? '—'}
-                    </span>
+                  <td
+                    className="px-2 sm:px-3 py-1 font-bold text-white text-center"
+                    style={{ backgroundColor: color }}
+                  >
+                    {item.rank}
                   </td>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  <td className="px-2 sm:px-3 py-1">
+                    <div className="font-medium text-foreground">{item.name}</div>
+                    <div className="text-[10px] font-mono text-muted-foreground hidden sm:block">{item.transporterId}</div>
+                  </td>
+                  <td
+                    className="px-2 sm:px-3 py-1 text-right font-bold text-white"
+                    style={{ backgroundColor: color }}
+                  >
+                    {item.score.toFixed(2)}
+                  </td>
+                  <td className="px-2 sm:px-3 py-1 text-right text-foreground tabular-nums hidden sm:table-cell">
+                    {item.packages.toLocaleString()}
+                  </td>
+                  {showStanding && (
+                    <td className="px-2 sm:px-3 py-1 text-center hidden sm:table-cell">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          standingStyles[item.standing ?? ''] ?? 'text-muted-foreground'
+                        }`}
+                      >
+                        {item.standing ?? '—'}
+                      </span>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -133,42 +135,44 @@ export function NoSafetyDataTable({ rows, qualityScores }: NoSafetyDataProps) {
 
   return (
     <div className="rounded-lg section-card overflow-hidden">
-      <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white" style={{ backgroundColor: '#9e9e9e' }}>
+      <div className="px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white" style={{ backgroundColor: '#9e9e9e' }}>
         Employees Without Safety Data
       </div>
-      <div className="px-4 py-1.5 text-[11px] text-muted-foreground italic">
+      <div className="px-3 sm:px-4 py-1.5 text-[11px] text-muted-foreground italic">
         These DAs have no safety metrics recorded and are excluded from safety rankings.
       </div>
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="border-b border-border text-muted-foreground">
-            <th className="px-3 py-1.5 text-left font-medium w-8">#</th>
-            <th className="px-3 py-1.5 text-left font-medium">Name</th>
-            <th className="px-3 py-1.5 text-right font-medium">Quality Score</th>
-            <th className="px-3 py-1.5 text-right font-medium">Pkg</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((row, idx) => {
-            const qData = qualityScores.find(q => q.transporterId === row.transporterId);
-            return (
-              <tr key={row.transporterId} className="border-b border-border/30 last:border-b-0 bg-muted/30">
-                <td className="px-3 py-1 text-center text-muted-foreground">{idx + 1}</td>
-                <td className="px-3 py-1">
-                  <div className="font-medium text-foreground">{row.name}</div>
-                  <div className="text-[10px] font-mono text-muted-foreground">{row.transporterId}</div>
-                </td>
-                <td className="px-3 py-1 text-right text-foreground tabular-nums">
-                  {qData ? qData.score.toFixed(2) : '0.00'}
-                </td>
-                <td className="px-3 py-1 text-right text-foreground tabular-nums">
-                  {row.packagesDelivered.toLocaleString()}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-[420px]">
+          <thead>
+            <tr className="border-b border-border text-muted-foreground">
+              <th className="px-2 sm:px-3 py-1.5 text-left font-medium w-8">#</th>
+              <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
+              <th className="px-2 sm:px-3 py-1.5 text-right font-medium">Quality Score</th>
+              <th className="px-2 sm:px-3 py-1.5 text-right font-medium hidden sm:table-cell">Pkg</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((row, idx) => {
+              const qData = qualityScores.find(q => q.transporterId === row.transporterId);
+              return (
+                <tr key={row.transporterId} className="border-b border-border/30 last:border-b-0 bg-muted/30">
+                  <td className="px-2 sm:px-3 py-1 text-center text-muted-foreground">{idx + 1}</td>
+                  <td className="px-2 sm:px-3 py-1">
+                    <div className="font-medium text-foreground">{row.name}</div>
+                    <div className="text-[10px] font-mono text-muted-foreground hidden sm:block">{row.transporterId}</div>
+                  </td>
+                  <td className="px-2 sm:px-3 py-1 text-right text-foreground tabular-nums">
+                    {qData ? qData.score.toFixed(2) : '0.00'}
+                  </td>
+                  <td className="px-2 sm:px-3 py-1 text-right text-foreground tabular-nums hidden sm:table-cell">
+                    {row.packagesDelivered.toLocaleString()}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -200,59 +204,61 @@ export function TrailingTable({
   return (
     <div className="rounded-lg section-card overflow-hidden">
       <div
-        className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white"
+        className="px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white"
         style={{ backgroundColor: titleColor }}
       >
         {title}
       </div>
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="border-b border-border text-muted-foreground">
-            <th className="px-3 py-1.5 text-left font-medium w-8">#</th>
-            <th className="px-3 py-1.5 text-left font-medium">Name</th>
-            <th className="px-3 py-1.5 text-right font-medium">{scoreLabel}</th>
-            <th className="px-3 py-1.5 text-right font-medium">Pkg</th>
-            <th className="px-3 py-1.5 text-center font-medium">Wks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => {
-            const pct = (item.avgScore / maxScore) * 100;
-            const color = scoreColor(pct);
-            const bg = scoreBgColor(pct);
-            return (
-              <tr
-                key={item.transporterId}
-                className="border-b border-border/30 last:border-b-0"
-                style={{ backgroundColor: bg }}
-              >
-                <td
-                  className="px-3 py-1 font-bold text-white text-center"
-                  style={{ backgroundColor: color }}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-[420px]">
+          <thead>
+            <tr className="border-b border-border text-muted-foreground">
+              <th className="px-2 sm:px-3 py-1.5 text-left font-medium w-8">#</th>
+              <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
+              <th className="px-2 sm:px-3 py-1.5 text-right font-medium">{scoreLabel}</th>
+              <th className="px-2 sm:px-3 py-1.5 text-right font-medium hidden sm:table-cell">Pkg</th>
+              <th className="px-2 sm:px-3 py-1.5 text-center font-medium hidden sm:table-cell">Wks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item) => {
+              const pct = (item.avgScore / maxScore) * 100;
+              const color = scoreColor(pct);
+              const bg = scoreBgColor(pct);
+              return (
+                <tr
+                  key={item.transporterId}
+                  className="border-b border-border/30 last:border-b-0"
+                  style={{ backgroundColor: bg }}
                 >
-                  {item.rank}
-                </td>
-                <td className="px-3 py-1">
-                  <div className="font-medium text-foreground">{item.name}</div>
-                  <div className="text-[10px] font-mono text-muted-foreground">{item.transporterId}</div>
-                </td>
-                <td
-                  className="px-3 py-1 text-right font-bold text-white"
-                  style={{ backgroundColor: color }}
-                >
-                  {item.avgScore.toFixed(2)}
-                </td>
-                <td className="px-3 py-1 text-right text-foreground tabular-nums">
-                  {item.totalPackages.toLocaleString()}
-                </td>
-                <td className="px-3 py-1 text-center text-muted-foreground tabular-nums">
-                  {item.weekCount}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  <td
+                    className="px-2 sm:px-3 py-1 font-bold text-white text-center"
+                    style={{ backgroundColor: color }}
+                  >
+                    {item.rank}
+                  </td>
+                  <td className="px-2 sm:px-3 py-1">
+                    <div className="font-medium text-foreground">{item.name}</div>
+                    <div className="text-[10px] font-mono text-muted-foreground hidden sm:block">{item.transporterId}</div>
+                  </td>
+                  <td
+                    className="px-2 sm:px-3 py-1 text-right font-bold text-white"
+                    style={{ backgroundColor: color }}
+                  >
+                    {item.avgScore.toFixed(2)}
+                  </td>
+                  <td className="px-2 sm:px-3 py-1 text-right text-foreground tabular-nums hidden sm:table-cell">
+                    {item.totalPackages.toLocaleString()}
+                  </td>
+                  <td className="px-2 sm:px-3 py-1 text-center text-muted-foreground tabular-nums hidden sm:table-cell">
+                    {item.weekCount}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

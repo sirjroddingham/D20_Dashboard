@@ -99,21 +99,28 @@ export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistrib
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-lg section-card p-5"
+      className="rounded-lg section-card p-3 sm:p-4 flex flex-col h-full min-h-[260px]"
     >
-      <div className="mb-2 flex items-center justify-between">
+      <div className="shrink-0 mb-2 flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
         <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
           {total} DAs
         </span>
       </div>
-      <ReactECharts
-        option={option}
-        theme={chartTheme}
-        style={{ height: 300, width: '100%' }}
-        opts={{ renderer: 'canvas' }}
-        notMerge={true}
-      />
+      {/* Chart area: grows to fill card, but caps at 480px so it doesn't look absurd
+          when the sibling ranking table is extremely tall (e.g. 43 perfect scorers).
+          Centered vertically so it sits nicely in the middle of the available space. */}
+      <div className="flex flex-1 items-center justify-center min-h-0">
+        <div className="w-full min-h-[240px] max-h-[480px] h-full">
+          <ReactECharts
+            option={option}
+            theme={chartTheme}
+            style={{ height: '100%', width: '100%' }}
+            opts={{ renderer: 'canvas' }}
+            notMerge={true}
+          />
+        </div>
+      </div>
     </motion.div>
   );
 }

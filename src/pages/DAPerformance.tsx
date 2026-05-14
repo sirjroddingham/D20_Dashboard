@@ -312,9 +312,9 @@ export default function DAPerformance() {
             </div>
 
             {/* === OVERALL === */}
-            <div className="rounded-lg section-card p-5">
-              <h2 className="mb-4 text-base font-semibold text-foreground">Overall Performance Rankings</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
+              <h2 className="mb-3 sm:mb-4 text-base font-semibold text-foreground">Overall Performance Rankings</h2>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topOverall.length > 10 ? `Top Overall Performers — All Perfect Scores (${topOverall.length})` : 'Top 10 Overall Performers'}
@@ -331,7 +331,7 @@ export default function DAPerformance() {
                     scoreLabel="Overall Score"
                   />
                 </div>
-                <div className="flex items-center">
+                <div className="lg:flex lg:flex-col">
                   <ScoreDistributionChart
                     title="Overall Score Distribution"
                     scores={overallChartScores}
@@ -342,9 +342,9 @@ export default function DAPerformance() {
             </div>
 
             {/* === SAFETY === */}
-            <div className="rounded-lg section-card p-5">
-              <h2 className="mb-4 text-base font-semibold text-foreground">Safety Group Rankings</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
+              <h2 className="mb-3 sm:mb-4 text-base font-semibold text-foreground">Safety Group Rankings</h2>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topSafety.length > 10 ? `Top Safety Performers — All Perfect Scores (${topSafety.length})` : 'Top 10 Safety Performers'}
@@ -361,7 +361,7 @@ export default function DAPerformance() {
                     scoreLabel="Safety Score"
                   />
                 </div>
-                <div className="flex items-center">
+                <div className="lg:flex lg:flex-col">
                   <ScoreDistributionChart
                     title="Safety Score Distribution"
                     scores={safetyChartScores}
@@ -378,9 +378,9 @@ export default function DAPerformance() {
             </div>
 
             {/* === QUALITY === */}
-            <div className="rounded-lg section-card p-5">
-              <h2 className="mb-4 text-base font-semibold text-foreground">Quality Group Rankings</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
+              <h2 className="mb-3 sm:mb-4 text-base font-semibold text-foreground">Quality Group Rankings</h2>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topQuality.length > 10 ? `Top Quality Performers — All Perfect Scores (${topQuality.length})` : 'Top 10 Quality Performers'}
@@ -397,7 +397,7 @@ export default function DAPerformance() {
                     scoreLabel="Quality Score"
                   />
                 </div>
-                <div className="flex items-center">
+                <div className="lg:flex lg:flex-col">
                   <ScoreDistributionChart
                     title="Quality Score Distribution"
                     scores={qualityChartScores}
@@ -414,7 +414,7 @@ export default function DAPerformance() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-4"
               >
-                <div className="rounded-lg section-card p-4">
+                <div className="rounded-lg section-card p-3 sm:p-4">
                   <div className="flex items-center gap-3">
                     <div className="h-6 w-px bg-border" />
                     <h2 className="text-base font-semibold text-foreground">Trailing Performance Averages</h2>
@@ -424,7 +424,7 @@ export default function DAPerformance() {
                   </div>
                 </div>
 
-                <div className="rounded-lg section-card p-5 space-y-4">
+                <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
                   <h3 className="text-sm font-semibold text-foreground">Extended Overall Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
@@ -461,7 +461,7 @@ export default function DAPerformance() {
                   </div>
                 </div>
 
-                <div className="rounded-lg section-card p-5 space-y-4">
+                <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
                   <h3 className="text-sm font-semibold text-foreground">Extended Safety Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
@@ -481,7 +481,7 @@ export default function DAPerformance() {
                   </div>
                 </div>
 
-                <div className="rounded-lg section-card p-5 space-y-4">
+                <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
                   <h3 className="text-sm font-semibold text-foreground">Extended Quality Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
