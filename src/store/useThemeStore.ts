@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const STORAGE_KEY = 'rts-dashboard-theme';
+const STORAGE_KEY = 'd20-dashboard-theme';
 
 function loadPersisted(): boolean {
   try {
