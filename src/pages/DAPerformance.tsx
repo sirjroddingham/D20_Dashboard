@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, BarChart3 } from 'lucide-react';
+import { FileText, BarChart3, Trash2 } from 'lucide-react';
 import { useDAPerformanceStore, STANDARD_SAFETY_WEIGHT, STANDARD_QUALITY_WEIGHT } from '../store/useDAPerformanceStore';
 import {
   PERFECT_OVERALL,
@@ -37,6 +37,7 @@ export default function DAPerformance() {
   const loadedWeeks = useDAPerformanceStore(s => s.loadedWeeks);
   const mostRecentWeek = useDAPerformanceStore(s => s.mostRecentWeek);
   const fileName = useDAPerformanceStore(s => s.fileName);
+  const clearData = useDAPerformanceStore(s => s.clearData);
   const [selectedWeek, setSelectedWeek] = useState<string>(mostRecentWeek);
 
   useEffect(() => {
@@ -249,7 +250,19 @@ export default function DAPerformance() {
             </div>
           )}
         </div>
-        <ScorecardCSVUpload compact />
+        <div className="flex items-center gap-2">
+          {hasData && (
+            <button
+              type="button"
+              onClick={clearData}
+              className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-red-400"
+              title="Clear all data"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+          <ScorecardCSVUpload compact />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">

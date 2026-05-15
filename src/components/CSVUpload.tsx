@@ -8,7 +8,6 @@ import type { RTSDataRow } from '../lib/rts/types';
 
 interface CSVUploadProps {
   compact?: boolean;
-  onParsed?: (data: RTSDataRow[], fileName: string) => void;
 }
 
 interface ParseResult {
@@ -73,9 +72,8 @@ function parseSingleCsv(csvText: string, fileName: string): ParseResult {
   return { data, warnings, fileName };
 }
 
-export default function CSVUpload({ compact = false, onParsed }: CSVUploadProps) {
-  const setRawData = useRTSStore(s => s.setRawData);
-  const setFileName = useRTSStore(s => s.setFileName);
+export default function CSVUpload({ compact = false }: CSVUploadProps) {
+  const mergeRows = useRTSStore(s => s.mergeRows);
   const [error, setErrorState] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,18 +120,9 @@ export default function CSVUpload({ compact = false, onParsed }: CSVUploadProps)
         setErrorState(allWarnings.join(' '));
       }
 
-      const combinedName = fileArray.length === 1
-        ? fileArray[0].name
-        : `${fileArray.length} files (${allData.length} rows)`;
-      
-      if (onParsed) {
-        onParsed(allData, combinedName);
-      } else {
-        setFileName(combinedName);
-        setRawData(allData);
-      }
+      mergeRows(allData);
     });
-  }, [setRawData, setFileName, onParsed]);
+  }, [mergeRows]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -211,7 +200,7 @@ export default function CSVUpload({ compact = false, onParsed }: CSVUploadProps)
         />
         <Upload className="mx-auto mb-3 h-10 w-10 text-text-faint" />
         <p className="mb-1 text-lg font-medium text-text-subtle">Drop CSV files here or click to browse</p>
-        <p className="text-sm text-text-body">Upload 1 or more weekly CSV files to combine</p>
+        <p className="text-sm text-text-body">Upload 1 or more weekly CSV files to merge</p>
         <div className="mt-4 flex items-center justify-center gap-4 text-xs text-text-faint">
           <div className="flex items-center gap-1.5">
             <FileSpreadsheet className="h-3 w-3" />

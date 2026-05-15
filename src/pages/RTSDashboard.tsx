@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, BarChart3 } from 'lucide-react';
+import { FileText, BarChart3, Trash2 } from 'lucide-react';
 import { useRTSStore } from '../store/useRTSStore';
 import CSVUpload from '../components/CSVUpload';
 import FilterBar from '../components/FilterBar';
@@ -12,8 +12,7 @@ export default function RTSDashboard() {
   const rawData = useRTSStore(s => s.rawData);
   const fileName = useRTSStore(s => s.fileName);
   const filteredData = useRTSStore(s => s.filteredData);
-  const setRawData = useRTSStore(s => s.setRawData);
-  const setFileName = useRTSStore(s => s.setFileName);
+  const clearData = useRTSStore(s => s.clearData);
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4">
@@ -27,10 +26,19 @@ export default function RTSDashboard() {
               </div>
            )}
         </div>
-        <CSVUpload compact onParsed={(data, name) => {
-  setRawData(data);
-  setFileName(name);
-}} />
+        <div className="flex items-center gap-2">
+          {rawData.length > 0 && (
+            <button
+              type="button"
+              onClick={clearData}
+              className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-red-400"
+              title="Clear all data"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+          <CSVUpload compact />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -53,10 +61,10 @@ export default function RTSDashboard() {
               </motion.div>
               <h2 className="mb-2 text-2xl font-bold text-text-heading">RTS Management Dashboard</h2>
               <p className="mb-8 max-w-md text-center text-sm text-text-body">
-                Upload a CSV file to begin analyzing delivery performance, RTS patterns, and employee metrics.
+                Upload one or more CSV files to begin analyzing delivery performance, RTS patterns, and employee metrics.
               </p>
               <div className="w-full max-w-lg">
-                <CSVUpload onParsed={(data, name) => { setRawData(data); setFileName(name); }} />
+                <CSVUpload />
               </div>
             </div>
           </motion.div>

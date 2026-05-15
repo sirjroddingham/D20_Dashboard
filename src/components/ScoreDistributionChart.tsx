@@ -96,7 +96,7 @@ export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistrib
   }), [pieData, total, colors, colorMap, title]);
 
   const chartStyle = useMemo(() => ({ height: 300, width: '100%' }), []);
-  const chartOpts = useMemo(() => ({ renderer: 'canvas' }), []);
+  const chartOpts = useMemo(() => ({ renderer: 'canvas' as const }), []);
 
   return (
     <motion.div

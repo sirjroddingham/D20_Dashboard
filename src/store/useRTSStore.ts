@@ -1,6 +1,21 @@
 import { create } from 'zustand';
 import type { RTSDataRow, RTSFilters } from '../lib/rts/types';
 
+function toISOWeek(d: Date): string {
+  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = dt.getUTCDay() || 7;
+  dt.setUTCDate(dt.getUTCDate() + 4 - dayNum);
+  const year = dt.getUTCFullYear();
+  const weekStart = new Date(Date.UTC(year, 0, 4));
+  const weekNo = String(Math.ceil(((dt.getTime() - weekStart.getTime()) / 86400000 + 1) / 7)).padStart(2, '0');
+  return `${year}-W${weekNo}`;
+}
+
+function getWeekKey(row: RTSDataRow): string {
+  if (!row.normalizedDate) return 'Unknown';
+  return toISOWeek(row.normalizedDate);
+}
+
 interface RTSStoreState {
   rawData: RTSDataRow[];
   filteredData: RTSDataRow[];
@@ -9,6 +24,7 @@ interface RTSStoreState {
   fileName: string;
 
   setRawData: (data: RTSDataRow[]) => void;
+  mergeRows: (newRows: RTSDataRow[]) => void;
   setFileName: (name: string) => void;
   setFilters: (filters: Partial<RTSFilters>) => void;
   resetFilters: () => void;
@@ -58,6 +74,27 @@ export const useRTSStore = create<RTSStoreState>((set, get) => ({
     const state = get();
     const filtered = applyFilters(data, state.filters);
     set({ rawData: data, filteredData: filtered });
+  },
+
+  mergeRows: (newRows) => {
+    const existing = get().rawData;
+    const existingKeys = new Set(existing.map(r => `${getWeekKey(r)}::${r.transporterId}`));
+    const toAdd = newRows.filter(r => !existingKeys.has(`${getWeekKey(r)}::${r.transporterId}`));
+
+    if (toAdd.length === 0) {
+      set({ fileName: `Uploaded (${newRows.length} rows, all duplicates)` });
+      return;
+    }
+
+    const merged = [...existing, ...toAdd];
+    const state = get();
+    const filtered = applyFilters(merged, state.filters);
+
+    set({
+      rawData: merged,
+      filteredData: filtered,
+      fileName: `${toAdd.length} rows added (${merged.length} total)`,
+    });
   },
 
   setFileName: (name) => set({ fileName: name }),

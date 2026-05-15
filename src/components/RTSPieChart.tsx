@@ -74,7 +74,7 @@ export default function RTSPieChart() {
 
 
   const chartStyle = useMemo(() => ({ height: 350, width: '100%' }), []);
-  const chartOpts = useMemo(() => ({ renderer: 'canvas' }), []);
+  const chartOpts = useMemo(() => ({ renderer: 'canvas' as const }), []);
 
   return (
     <motion.div
