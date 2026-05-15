@@ -96,7 +96,6 @@ export default function RankingTable({
                   </td>
                   <td className="px-2 sm:px-3 py-1">
                     <div className="font-medium text-text-heading">{item.name}</div>
-                    <div className="text-[10px] font-mono text-text-subtle hidden sm:block">{item.transporterId}</div>
                   </td>
                   <td className={`px-2 sm:px-3 py-1 text-right font-bold ${colorCls}`}>
                     {item.score.toFixed(2)}
@@ -161,7 +160,6 @@ export function NoSafetyDataTable({ rows, qualityScores }: NoSafetyDataProps) {
                   <td className="px-2 sm:px-3 py-1 text-center text-text-subtle">{idx + 1}</td>
                   <td className="px-2 sm:px-3 py-1">
                     <div className="font-medium text-text-heading">{row.name}</div>
-                    <div className="text-[10px] font-mono text-text-subtle hidden sm:block">{row.transporterId}</div>
                   </td>
                   <td className="px-2 sm:px-3 py-1 text-right text-text-heading tabular-nums">
                     {qData ? qData.score.toFixed(2) : '0.00'}
@@ -236,7 +234,6 @@ export function TrailingTable({
                   </td>
                   <td className="px-2 sm:px-3 py-1">
                     <div className="font-medium text-text-heading">{item.name}</div>
-                    <div className="text-[10px] font-mono text-text-subtle hidden sm:block">{item.transporterId}</div>
                   </td>
                   <td className={`px-2 sm:px-3 py-1 text-right font-bold ${colorCls}`}>
                     {item.avgScore.toFixed(2)}

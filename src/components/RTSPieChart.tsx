@@ -58,19 +58,23 @@ export default function RTSPieChart() {
         smooth: true,
         lineStyle: { color: colors.pie.line, width: 1 },
       },
-      animationType: 'scale',
-      animationEasing: 'elasticOut',
-      animationDelay: (idx: number) => idx * 100,
-      data: pieData.map((d) => ({
-        ...d,
-        itemStyle: {
-          color: colorMap.get(d.name),
-        },
-      })),
+       animationDuration: 0,
+       animationEasing: 'cubicOut',
+       animationDelay: 0,
+       data: pieData.map((d) => ({
+         ...d,
+         itemStyle: {
+           color: colorMap.get(d.name),
+         },
+       })),
     }],
-    animationDuration: 800,
+    animationDuration: 0,
     animationEasing: 'cubicOut',
   }), [pieData, total, colors, colorMap]);
+
+
+  const chartStyle = useMemo(() => ({ height: 350, width: '100%' }), []);
+  const chartOpts = useMemo(() => ({ renderer: 'canvas' }), []);
 
   return (
     <motion.div
@@ -88,11 +92,12 @@ export default function RTSPieChart() {
       <ReactECharts
         option={option}
         theme={chartTheme}
-        style={{ height: 350, width: '100%' }}
-        opts={{ renderer: 'canvas' }}
-        notMerge={true}
+        style={chartStyle}
+        opts={chartOpts}
+        notMerge={false}
         showLoading={false}
       />
     </motion.div>
   );
+
 }
