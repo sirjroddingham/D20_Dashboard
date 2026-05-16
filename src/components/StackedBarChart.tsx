@@ -50,6 +50,12 @@ export default function StackedBarChart() {
 
     const handleMouseMove = (params: { seriesIndex?: number; seriesName?: string }) => {
       hoveredSeries.current = params.seriesName || null;
+      if (params.seriesIndex !== undefined) {
+        chart.dispatchAction({
+          type: 'showTip',
+          seriesIndex: params.seriesIndex,
+        });
+      }
     };
     const handleMouseOut = () => {
       hoveredSeries.current = null;
@@ -104,11 +110,11 @@ export default function StackedBarChart() {
         let html = `<div style="font-weight:600;margin-bottom:6px;color:${colors.tooltip.text};">${date}</div>`;
         for (const p of params) {
           const isHovered = p.seriesName === hoveredSeries.current;
-          const rowColor = isHovered ? colors.tooltip.text : colors.tooltip.muted;
+          const dotColor = p.color || '';
+          const rowColor = isHovered ? dotColor : colors.tooltip.muted;
           const fontWeight = isHovered ? '600' : '400';
           const bgColor = isHovered ? colors.tooltip.hoverBg : 'transparent';
           const borderColor = isHovered ? colors.tooltip.hoverBorder : 'transparent';
-          const dotColor = p.color || '';
           html += `<div style="display:flex;justify-content:space-between;gap:16px;color:${rowColor};font-weight:${fontWeight};background:${bgColor};border-left:3px solid ${borderColor};padding:2px 6px;margin:1px 0;">
             <span style="display:flex;align-items:center;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${dotColor};margin-right:6px;"></span>${p.seriesName}:</span>
             <strong style="color:${rowColor};">${p.value}</strong>

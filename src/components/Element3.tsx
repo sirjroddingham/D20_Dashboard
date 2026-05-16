@@ -26,7 +26,7 @@ export default function Element3() {
       className="rounded-lg section-card p-5"
     >
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-text-subtle">Employee Performance Summary</h3>
+        <h3 className="text-sm font-medium text-text-subtle">Employee Summary</h3>
         <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-text-subtle">
           {employeeData.length} employees
         </span>
@@ -51,7 +51,7 @@ export default function Element3() {
                   <p className={`truncate text-sm font-medium ${
                     isActive ? ' text-text-heading' : 'text-text-subtle'
                   }`}>{emp.name}</p>
-                  <p className="text-xs text-text-subtle/60">{emp.count} rows</p>
+                  <p className="text-xs text-text-subtle/60">Total: {emp.count}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-12 overflow-hidden rounded-full bg-surface-2 h-1.5">
