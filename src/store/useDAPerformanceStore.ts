@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useDataSourceStore } from './useDataSourceStore';
 import type { ScorecardRow, DATrailingAvg } from '../lib/scorecard/types';
 
 export const STANDARD_SAFETY_WEIGHT = 52.1;
@@ -46,53 +47,72 @@ function computeTrailingAverages(
   });
 }
 
-export const useDAPerformanceStore = create<DAPerformanceState>((set, get) => ({
-  rows: [],
-  loadedWeeks: [],
-  mostRecentWeek: '',
-  fileName: '',
-  _trailingAverages: [],
-  trailingAverages: [],
+function recomputeDerived(rows: ScorecardRow[]) {
+  const weeks = [...new Set(rows.map(r => r.week))].sort();
+  const mostRecent = weeks.length > 0 ? weeks[weeks.length - 1] : '';
+  const trailingAvgs = computeTrailingAverages(rows);
+  return { weeks, mostRecent, trailingAvgs };
+}
 
-  mergeRows: (newRows) => {
-    const existing = get().rows;
-    const existingKeys = new Set(existing.map(r => `${r.week}::${r.transporterId}`));
-    const toAdd = newRows.filter(r => !existingKeys.has(`${r.week}::${r.transporterId}`));
+export const useDAPerformanceStore = create<DAPerformanceState>((set, get) => {
+  // Initialize from central store
+  const central = useDataSourceStore.getState();
+  const { weeks, mostRecent, trailingAvgs } = recomputeDerived(central.scorecardRows);
 
-    if (toAdd.length === 0) {
-      set({ fileName: `${newRows[0]?.week ?? 'Week'} uploaded (duplicate, no new data)` });
-      return;
-    }
+  return {
+    rows: central.scorecardRows,
+    loadedWeeks: weeks,
+    mostRecentWeek: mostRecent,
+    fileName: central.scorecardLastUpload,
+    _trailingAverages: trailingAvgs,
 
-    const merged = [...existing, ...toAdd];
-    const weeks = [...new Set(merged.map(r => r.week))].sort();
-    const mostRecent = weeks.length > 0 ? weeks[weeks.length - 1] : '';
-    const trailingAvgs = computeTrailingAverages(merged);
+    mergeRows: (newRows) => {
+      // Delegate to central store for dedup
+      useDataSourceStore.getState().mergeScorecard(newRows);
 
-    set({
-      rows: merged,
-      loadedWeeks: weeks,
-      mostRecentWeek: mostRecent,
-      fileName: `${toAdd.length} rows added (${weeks.length} week(s) loaded)`,
-      _trailingAverages: trailingAvgs,
-      trailingAverages: trailingAvgs,
-    });
-  },
+      // Sync back from central store
+      const central = useDataSourceStore.getState();
+      const { weeks, mostRecent, trailingAvgs } = recomputeDerived(central.scorecardRows);
 
-  rowsForWeek: (week) => {
-    return get().rows.filter(r => r.week === week);
-  },
+      set({
+        rows: central.scorecardRows,
+        loadedWeeks: weeks,
+        mostRecentWeek: mostRecent,
+        fileName: central.scorecardLastUpload,
+        _trailingAverages: trailingAvgs,
+      });
+    },
 
-  setFileName: (name) => set({ fileName: name }),
+    rowsForWeek: (week) => {
+      return get().rows.filter(r => r.week === week);
+    },
 
-  clearData: () => {
-    set({
-      rows: [],
-      loadedWeeks: [],
-      mostRecentWeek: '',
-      fileName: '',
-      _trailingAverages: [],
-      trailingAverages: [],
-    });
-  },
-}));
+    trailingAverages: [],
+
+    setFileName: (name) => set({ fileName: name }),
+
+    clearData: () => {
+      useDataSourceStore.getState().clearScorecard();
+      set({
+        rows: [],
+        loadedWeeks: [],
+        mostRecentWeek: '',
+        fileName: '',
+        _trailingAverages: [],
+      });
+    },
+  };
+});
+
+// Sync central store changes back to DA store
+useDataSourceStore.subscribe((state) => {
+  const daStore = useDAPerformanceStore.getState();
+  const { weeks, mostRecent, trailingAvgs } = recomputeDerived(state.scorecardRows);
+  useDAPerformanceStore.setState({
+    rows: state.scorecardRows,
+    loadedWeeks: weeks,
+    mostRecentWeek: mostRecent,
+    fileName: state.scorecardLastUpload || daStore.fileName,
+    _trailingAverages: trailingAvgs,
+  });
+});

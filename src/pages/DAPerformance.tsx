@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, BarChart3, Trash2 } from 'lucide-react';
+import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
 import { useDAPerformanceStore, STANDARD_SAFETY_WEIGHT, STANDARD_QUALITY_WEIGHT } from '../store/useDAPerformanceStore';
 import {
   PERFECT_OVERALL,
@@ -251,6 +252,13 @@ export default function DAPerformance() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            to="/data"
+            className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
+            title="Upload data"
+          >
+            <Database className="h-4 w-4" />
+          </Link>
           {hasData && (
             <button
               type="button"
@@ -287,9 +295,16 @@ export default function DAPerformance() {
               <p className="mb-8 max-w-md text-center text-sm text-text-subtle">
                 Upload one or more Scorecard CSV files to view overall, safety, and quality rankings with trailing averages.
               </p>
-              <div className="w-full max-w-lg">
-                <ScorecardCSVUpload />
-              </div>
+               <div className="w-full max-w-lg">
+                 <ScorecardCSVUpload />
+               </div>
+               <Link
+                 to="/data"
+                 className="mt-4 flex items-center gap-1.5 text-sm text-text-body hover:text-text-subtle transition-colors"
+               >
+                 <Database className="h-4 w-4" />
+                 Manage all data uploads
+               </Link>
             </div>
           </motion.div>
         ) : (
