@@ -80,6 +80,7 @@ export const useDAPerformanceStore = create<DAPerformanceState>((set, get) => {
         mostRecentWeek: mostRecent,
         fileName: central.scorecardLastUpload,
         _trailingAverages: trailingAvgs,
+        trailingAverages: trailingAvgs,
       });
     },
 
@@ -99,6 +100,7 @@ export const useDAPerformanceStore = create<DAPerformanceState>((set, get) => {
         mostRecentWeek: '',
         fileName: '',
         _trailingAverages: [],
+        trailingAverages: [],
       });
     },
   };
@@ -114,5 +116,6 @@ useDataSourceStore.subscribe((state) => {
     mostRecentWeek: mostRecent,
     fileName: state.scorecardLastUpload || daStore.fileName,
     _trailingAverages: trailingAvgs,
+    trailingAverages: trailingAvgs,
   });
 });
