@@ -238,7 +238,7 @@ export default function DataUpload({ compact = false }: DataUploadProps) {
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onClick={() => fileInputRef.current?.click()}
-          className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
+          className="relative cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
           title="Upload data files"
         >
           <input
@@ -246,10 +246,10 @@ export default function DataUpload({ compact = false }: DataUploadProps) {
             type="file"
             accept=".csv"
             multiple
-            className="hidden"
+            className="absolute inset-0 z-10 opacity-0"
             onChange={handleFileChange}
           />
-          <Upload className="h-4 w-4" />
+          <Upload className="h-4 w-4 pointer-events-none" />
         </div>
       </motion.div>
     );
@@ -276,18 +276,18 @@ export default function DataUpload({ compact = false }: DataUploadProps) {
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        onClick={() => fileInputRef.current?.click()}
-        className="relative cursor-pointer rounded-lg border-2 border-dashed border-surface-3 bg-surface-2/50 p-8 text-center transition-colors hover:border-surface-hover hover:bg-surface-hover"
+        className="relative cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-surface-3 bg-surface-2/50 p-8 text-center transition-colors hover:border-surface-hover hover:bg-surface-hover"
       >
         <input
           ref={fileInputRef}
           type="file"
           accept=".csv"
           multiple
-          className="hidden"
+          className="absolute inset-0 z-10 h-full w-full opacity-0"
           onChange={handleFileChange}
         />
-        <Database className="mx-auto mb-3 h-10 w-10 text-text-faint" />
+        <div className="pointer-events-none relative z-0">
+          <Database className="mx-auto mb-3 h-10 w-10 text-text-faint" />
         <p className="mb-1 text-lg font-medium text-text-subtle">
           Drop CSV files here or click to browse
         </p>
@@ -303,6 +303,7 @@ export default function DataUpload({ compact = false }: DataUploadProps) {
             <FileText className="h-3 w-3" />
             <span>Safe multi-file merge</span>
           </div>
+        </div>
         </div>
       </div>
 
