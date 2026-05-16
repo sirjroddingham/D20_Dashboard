@@ -33,7 +33,7 @@ interface UploadSummary {
   timestamp: number;
 }
 
-interface DataSourceState {
+export interface DataSourceState {
   // RTS data
   rtsRows: RTSDataRow[];
   rtsLoadedWeeks: string[];

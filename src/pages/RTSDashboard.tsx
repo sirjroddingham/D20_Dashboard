@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
 import { useRTSStore } from '../store/useRTSStore';
-import CSVUpload from '../components/CSVUpload';
+import DataUpload from '../components/DataUpload';
 import FilterBar from '../components/FilterBar';
 import RTSPieChart from '../components/RTSPieChart';
 import StackedBarChart from '../components/StackedBarChart';
@@ -45,7 +45,7 @@ export default function RTSDashboard() {
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <CSVUpload compact />
+          <DataUpload compact />
         </div>
       </div>
 
@@ -71,9 +71,9 @@ export default function RTSDashboard() {
                <p className="mb-8 max-w-md text-center text-sm text-text-body">
                  Upload one or more CSV files to begin analyzing delivery performance, RTS patterns, and employee metrics.
                </p>
-               <div className="w-full max-w-lg">
-                 <CSVUpload />
-               </div>
+                <div className="w-full max-w-lg">
+                  <DataUpload />
+                </div>
                <Link
                  to="/data"
                  className="mt-4 flex items-center gap-1.5 text-sm text-text-body hover:text-text-subtle transition-colors"

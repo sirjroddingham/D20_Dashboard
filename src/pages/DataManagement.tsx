@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import DataUpload from '../components/DataUpload';
 import { useDataSourceStore } from '../store/useDataSourceStore';
+import type { DataSourceState } from '../store/useDataSourceStore';
 
 const DATA_TYPES = [
   {
@@ -41,16 +42,34 @@ const DATA_TYPES = [
   },
 ];
 
+type DataTypeKey = (typeof DATA_TYPES)[number]['key'];
+
+function getRowsForKey(state: DataSourceState, key: DataTypeKey) {
+  return state[`${key}Rows` as keyof Pick<DataSourceState, 'rtsRows' | 'scorecardRows' | 'cdfRows' | 'dsbRows'>];
+}
+
+function getWeeksForKey(state: DataSourceState, key: DataTypeKey) {
+  return state[`${key}LoadedWeeks` as keyof Pick<DataSourceState, 'rtsLoadedWeeks' | 'scorecardLoadedWeeks' | 'cdfLoadedWeeks' | 'dsbLoadedWeeks'>];
+}
+
+function getLastUploadForKey(state: DataSourceState, key: DataTypeKey) {
+  return state[`${key}LastUpload` as keyof Pick<DataSourceState, 'rtsLastUpload' | 'scorecardLastUpload' | 'cdfLastUpload' | 'dsbLastUpload'>];
+}
+
+function getClearFnForKey(state: DataSourceState, key: DataTypeKey): () => void {
+  return state[`clear${key.charAt(0).toUpperCase() + key.slice(1)}` as keyof Pick<DataSourceState, 'clearRts' | 'clearScorecard' | 'clearCdf' | 'clearDsb'>];
+}
+
 function DataTypeCard({
   type,
 }: {
   type: typeof DATA_TYPES[0];
 }) {
-  const store = useDataSourceStore();
-  const rows = store[`${type.key}Rows` as keyof typeof store] as unknown as any[];
-  const weeks = store[`${type.key}LoadedWeeks` as keyof typeof store] as unknown as string[];
-  const lastUpload = store[`${type.key}LastUpload` as keyof typeof store] as string;
-  const clearFn = store[`clear${type.key.charAt(0).toUpperCase() + type.key.slice(1)}` as keyof typeof store] as () => void;
+  const state = useDataSourceStore();
+  const rows = getRowsForKey(state, type.key);
+  const weeks = getWeeksForKey(state, type.key);
+  const lastUpload = getLastUploadForKey(state, type.key);
+  const clearFn = getClearFnForKey(state, type.key);
 
   const hasData = rows.length > 0;
 

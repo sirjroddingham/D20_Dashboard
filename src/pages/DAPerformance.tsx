@@ -8,7 +8,7 @@ import {
   PERFECT_SAFETY,
   PERFECT_QUALITY,
 } from '../lib/scorecard/parseScorecard';
-import ScorecardCSVUpload from '../components/ScorecardCSVUpload';
+import DataUpload from '../components/DataUpload';
 import RankingTable, { NoSafetyDataTable, TrailingTable } from '../components/RankingTable';
 import { ScoreDistributionChart } from '../components/ScoreDistributionChart';
 
@@ -213,7 +213,7 @@ export default function DAPerformance() {
       transporterId: item.transporterId,
       score: item.score,
       packages: item.packages,
-      standing: 'standing' in item ? (item as any).standing : undefined,
+      standing: item.standing,
     }));
 
   const toBottomRanking = (items: typeof bottomOverall) =>
@@ -223,7 +223,7 @@ export default function DAPerformance() {
       transporterId: item.transporterId,
       score: item.score,
       packages: item.packages,
-      standing: 'standing' in item ? (item as any).standing : undefined,
+      standing: item.standing,
     }));
 
   const toTrailingRanking = (items: Array<{ transporterId: string; name: string; score: number; packages: number }>) =>
@@ -269,7 +269,7 @@ export default function DAPerformance() {
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <ScorecardCSVUpload compact />
+          <DataUpload compact />
         </div>
       </div>
 
@@ -296,7 +296,7 @@ export default function DAPerformance() {
                 Upload one or more Scorecard CSV files to view overall, safety, and quality rankings with trailing averages.
               </p>
                <div className="w-full max-w-lg">
-                 <ScorecardCSVUpload />
+                 <DataUpload />
                </div>
                <Link
                  to="/data"
