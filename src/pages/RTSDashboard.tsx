@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, BarChart3, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
 import { useRTSStore } from '../store/useRTSStore';
-import CSVUpload from '../components/CSVUpload';
+import DataUpload from '../components/DataUpload';
 import FilterBar from '../components/FilterBar';
 import RTSPieChart from '../components/RTSPieChart';
 import StackedBarChart from '../components/StackedBarChart';
@@ -27,6 +28,13 @@ export default function RTSDashboard() {
            )}
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            to="/data"
+            className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
+            title="Upload data"
+          >
+            <Database className="h-4 w-4" />
+          </Link>
           {rawData.length > 0 && (
             <button
               type="button"
@@ -37,7 +45,7 @@ export default function RTSDashboard() {
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <CSVUpload compact />
+          <DataUpload compact />
         </div>
       </div>
 
@@ -60,12 +68,19 @@ export default function RTSDashboard() {
                 <BarChart3 className="h-16 w-16 text-text-icon" />
               </motion.div>
               <h2 className="mb-2 text-2xl font-bold text-text-heading">RTS Management Dashboard</h2>
-              <p className="mb-8 max-w-md text-center text-sm text-text-body">
-                Upload one or more CSV files to begin analyzing delivery performance, RTS patterns, and employee metrics.
-              </p>
-              <div className="w-full max-w-lg">
-                <CSVUpload />
-              </div>
+               <p className="mb-8 max-w-md text-center text-sm text-text-body">
+                 Upload one or more CSV files to begin analyzing delivery performance, RTS patterns, and employee metrics.
+               </p>
+                <div className="w-full max-w-lg">
+                  <DataUpload />
+                </div>
+               <Link
+                 to="/data"
+                 className="mt-4 flex items-center gap-1.5 text-sm text-text-body hover:text-text-subtle transition-colors"
+               >
+                 <Database className="h-4 w-4" />
+                 Manage all data uploads
+               </Link>
             </div>
           </motion.div>
         ) : (

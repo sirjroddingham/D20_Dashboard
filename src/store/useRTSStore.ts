@@ -1,20 +1,6 @@
 import { create } from 'zustand';
+import { useDataSourceStore } from './useDataSourceStore';
 import type { RTSDataRow, RTSFilters } from '../lib/rts/types';
-
-function toISOWeek(d: Date): string {
-  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = dt.getUTCDay() || 7;
-  dt.setUTCDate(dt.getUTCDate() + 4 - dayNum);
-  const year = dt.getUTCFullYear();
-  const weekStart = new Date(Date.UTC(year, 0, 4));
-  const weekNo = String(Math.ceil(((dt.getTime() - weekStart.getTime()) / 86400000 + 1) / 7)).padStart(2, '0');
-  return `${year}-W${weekNo}`;
-}
-
-function getWeekKey(row: RTSDataRow): string {
-  if (!row.normalizedDate) return 'Unknown';
-  return toISOWeek(row.normalizedDate);
-}
 
 interface RTSStoreState {
   rawData: RTSDataRow[];
@@ -57,70 +43,85 @@ function applyFilters(rawData: RTSDataRow[], filters: RTSFilters): RTSDataRow[] 
   });
 }
 
-export const useRTSStore = create<RTSStoreState>((set, get) => ({
-  rawData: [],
-  filteredData: [],
-  isLoading: false,
-  fileName: '',
-  filters: {
-    dateRange: null,
-    employee: '',
-    search: '',
-    rtsCodes: [],
-    impactDcr: '',
-  },
+const defaultFilters: RTSFilters = {
+  dateRange: null,
+  employee: '',
+  search: '',
+  rtsCodes: [],
+  impactDcr: '',
+};
 
-  setRawData: (data) => {
-    const state = get();
-    const filtered = applyFilters(data, state.filters);
-    set({ rawData: data, filteredData: filtered });
-  },
+export const useRTSStore = create<RTSStoreState>((set, get) => {
+  // Initialize from central store
+  const central = useDataSourceStore.getState();
+  const filtered = applyFilters(central.rtsRows, defaultFilters);
 
-  mergeRows: (newRows) => {
-    const existing = get().rawData;
-    const existingKeys = new Set(existing.map(r => `${getWeekKey(r)}::${r.transporterId}`));
-    const toAdd = newRows.filter(r => !existingKeys.has(`${getWeekKey(r)}::${r.transporterId}`));
+  return {
+    rawData: central.rtsRows,
+    filteredData: filtered,
+    filters: { ...defaultFilters },
+    isLoading: false,
+    fileName: central.rtsLastUpload,
 
-    if (toAdd.length === 0) {
-      set({ fileName: `Uploaded (${newRows.length} rows, all duplicates)` });
-      return;
-    }
+    setRawData: (data) => {
+      useDataSourceStore.getState().mergeRts(data);
+      const state = get();
+      const filtered = applyFilters(data, state.filters);
+      set({ rawData: data, filteredData: filtered });
+    },
 
-    const merged = [...existing, ...toAdd];
-    const state = get();
-    const filtered = applyFilters(merged, state.filters);
+    mergeRows: (newRows) => {
+      // Delegate to central store for dedup
+      useDataSourceStore.getState().mergeRts(newRows);
 
-    set({
-      rawData: merged,
-      filteredData: filtered,
-      fileName: `${toAdd.length} rows added (${merged.length} total)`,
-    });
-  },
+      // Sync back from central store
+      const central = useDataSourceStore.getState();
+      const state = get();
+      const filtered = applyFilters(central.rtsRows, state.filters);
 
-  setFileName: (name) => set({ fileName: name }),
+      set({
+        rawData: central.rtsRows,
+        filteredData: filtered,
+        fileName: central.rtsLastUpload,
+      });
+    },
 
-  setFilters: (partialFilters) => {
-    const state = get();
-    const newFilters = { ...state.filters, ...partialFilters };
-    const filtered = applyFilters(state.rawData, newFilters);
-    set({ filters: newFilters, filteredData: filtered });
-  },
+    setFileName: (name) => set({ fileName: name }),
 
-  resetFilters: () => {
-    const state = get();
-    set({
-      filters: { dateRange: null, employee: '', search: '', rtsCodes: [], impactDcr: '' },
-      filteredData: state.rawData,
-    });
-  },
+    setFilters: (partialFilters) => {
+      const state = get();
+      const newFilters = { ...state.filters, ...partialFilters };
+      const filtered = applyFilters(state.rawData, newFilters);
+      set({ filters: newFilters, filteredData: filtered });
+    },
 
-  clearData: () => {
-    set({
-      rawData: [],
-      filteredData: [],
-      filters: { dateRange: null, employee: '', search: '', rtsCodes: [], impactDcr: '' },
-      fileName: '',
-    });
+    resetFilters: () => {
+      const state = get();
+      set({
+        filters: { ...defaultFilters },
+        filteredData: applyFilters(state.rawData, defaultFilters),
+      });
+    },
 
-  },
-}));
+    clearData: () => {
+      useDataSourceStore.getState().clearRts();
+      set({
+        rawData: [],
+        filteredData: [],
+        filters: { ...defaultFilters },
+        fileName: '',
+      });
+    },
+  };
+});
+
+// Sync central store changes back to RTS store
+useDataSourceStore.subscribe((state) => {
+  const rtsStore = useRTSStore.getState();
+  const filtered = applyFilters(state.rtsRows, rtsStore.filters);
+  useRTSStore.setState({
+    rawData: state.rtsRows,
+    filteredData: filtered,
+    fileName: state.rtsLastUpload || rtsStore.fileName,
+  });
+});

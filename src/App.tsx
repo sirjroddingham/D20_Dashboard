@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import RTSDashboard from './pages/RTSDashboard';
 import DAPerformance from './pages/DAPerformance';
 import CDFSB from './pages/CDFSB';
+import DataManagement from './pages/DataManagement';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route index element={<RTSDashboard />} />
           <Route path="da-performance" element={<DAPerformance />} />
           <Route path="cdf-dsb" element={<CDFSB />} />
+          <Route path="data" element={<DataManagement />} />
         </Route>
       </Routes>
     </HashRouter>

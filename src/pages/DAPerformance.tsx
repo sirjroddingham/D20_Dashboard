@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, BarChart3, Trash2 } from 'lucide-react';
+import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
 import { useDAPerformanceStore, STANDARD_SAFETY_WEIGHT, STANDARD_QUALITY_WEIGHT } from '../store/useDAPerformanceStore';
 import {
   PERFECT_OVERALL,
   PERFECT_SAFETY,
   PERFECT_QUALITY,
 } from '../lib/scorecard/parseScorecard';
-import ScorecardCSVUpload from '../components/ScorecardCSVUpload';
+import DataUpload from '../components/DataUpload';
 import RankingTable, { NoSafetyDataTable, TrailingTable } from '../components/RankingTable';
 import { ScoreDistributionChart } from '../components/ScoreDistributionChart';
 
@@ -212,7 +213,7 @@ export default function DAPerformance() {
       transporterId: item.transporterId,
       score: item.score,
       packages: item.packages,
-      standing: 'standing' in item ? (item as any).standing : undefined,
+      standing: item.standing,
     }));
 
   const toBottomRanking = (items: typeof bottomOverall) =>
@@ -222,7 +223,7 @@ export default function DAPerformance() {
       transporterId: item.transporterId,
       score: item.score,
       packages: item.packages,
-      standing: 'standing' in item ? (item as any).standing : undefined,
+      standing: item.standing,
     }));
 
   const toTrailingRanking = (items: Array<{ transporterId: string; name: string; score: number; packages: number }>) =>
@@ -251,6 +252,13 @@ export default function DAPerformance() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            to="/data"
+            className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
+            title="Upload data"
+          >
+            <Database className="h-4 w-4" />
+          </Link>
           {hasData && (
             <button
               type="button"
@@ -261,7 +269,7 @@ export default function DAPerformance() {
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <ScorecardCSVUpload compact />
+          <DataUpload compact />
         </div>
       </div>
 
@@ -287,9 +295,16 @@ export default function DAPerformance() {
               <p className="mb-8 max-w-md text-center text-sm text-text-subtle">
                 Upload one or more Scorecard CSV files to view overall, safety, and quality rankings with trailing averages.
               </p>
-              <div className="w-full max-w-lg">
-                <ScorecardCSVUpload />
-              </div>
+               <div className="w-full max-w-lg">
+                 <DataUpload />
+               </div>
+               <Link
+                 to="/data"
+                 className="mt-4 flex items-center gap-1.5 text-sm text-text-body hover:text-text-subtle transition-colors"
+               >
+                 <Database className="h-4 w-4" />
+                 Manage all data uploads
+               </Link>
             </div>
           </motion.div>
         ) : (
@@ -448,23 +463,6 @@ export default function DAPerformance() {
                       scoreLabel="Avg Overall"
                     />
                   </div>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <ScoreDistributionChart
-                      title="Trailing Overall Distribution"
-                      scores={trailingOverallChartScores}
-                      maxScore={100}
-                    />
-                    <ScoreDistributionChart
-                      title="Trailing Safety Distribution"
-                      scores={trailingSafetyChartScores}
-                      maxScore={STANDARD_SAFETY_WEIGHT}
-                    />
-                    <ScoreDistributionChart
-                      title="Trailing Quality Distribution"
-                      scores={trailingQualityChartScores}
-                      maxScore={STANDARD_QUALITY_WEIGHT}
-                    />
-                  </div>
                 </div>
 
                 <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
@@ -505,6 +503,24 @@ export default function DAPerformance() {
                       scoreLabel="Avg Quality"
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <ScoreDistributionChart
+                    title="Trailing Overall Distribution"
+                    scores={trailingOverallChartScores}
+                    maxScore={100}
+                  />
+                  <ScoreDistributionChart
+                    title="Trailing Safety Distribution"
+                    scores={trailingSafetyChartScores}
+                    maxScore={STANDARD_SAFETY_WEIGHT}
+                  />
+                  <ScoreDistributionChart
+                    title="Trailing Quality Distribution"
+                    scores={trailingQualityChartScores}
+                    maxScore={STANDARD_QUALITY_WEIGHT}
+                  />
                 </div>
               </motion.div>
             )}
