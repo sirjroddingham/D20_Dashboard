@@ -352,7 +352,7 @@ export default function DAPerformance() {
                     scoreLabel="Overall Score"
                   />
                 </div>
-                <div className="lg:flex lg:flex-col">
+                <div className="flex flex-col flex-1 min-h-0">
                   <ScoreDistributionChart
                     title="Overall Score Distribution"
                     scores={overallChartScores}
@@ -382,7 +382,7 @@ export default function DAPerformance() {
                     scoreLabel="Safety Score"
                   />
                 </div>
-                <div className="lg:flex lg:flex-col">
+                <div className="flex flex-col flex-1 min-h-0">
                   <ScoreDistributionChart
                     title="Safety Score Distribution"
                     scores={safetyChartScores}
@@ -418,7 +418,7 @@ export default function DAPerformance() {
                     scoreLabel="Quality Score"
                   />
                 </div>
-                <div className="lg:flex lg:flex-col">
+                <div className="flex flex-col flex-1 min-h-0">
                   <ScoreDistributionChart
                     title="Quality Score Distribution"
                     scores={qualityChartScores}

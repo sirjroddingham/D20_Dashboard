@@ -1,4 +1,6 @@
 import type { RTSDataRow } from './rts/types';
+import type { ScorecardRow } from './scorecard/types';
+import { toISOWeek } from './rts/helpers';
 
 export interface PieDataItem {
   name: string;
@@ -16,6 +18,7 @@ export interface EmployeeRow {
   count: number;
   percentage: number;
   oodtCount: number;
+  packagesPct: number;
 }
 
 export function getRTSDistribution(data: RTSDataRow[]): PieDataItem[] {
@@ -67,7 +70,7 @@ export function getBarChartData(data: RTSDataRow[]): BarChartDataItem[] {
     .map(([date, { counts, total }]) => ({ date, counts, total }));
 }
 
-export function getEmployeeSummary(data: RTSDataRow[]): EmployeeRow[] {
+export function getEmployeeSummary(data: RTSDataRow[], totalPackages: number): EmployeeRow[] {
   const empData = new Map<string, { count: number; oodtCount: number }>();
   const total = data.length;
 
@@ -87,6 +90,33 @@ export function getEmployeeSummary(data: RTSDataRow[]): EmployeeRow[] {
       count,
       percentage: total > 0 ? Math.round((count / total) * 1000) / 10 : 0,
       oodtCount,
+      packagesPct: totalPackages > 0 ? (count / totalPackages) * 100 : 0,
     }))
     .sort((a, b) => b.count - a.count);
+}
+
+export function getTotalPackagesForDateRange(filteredData: RTSDataRow[], scorecardRows: ScorecardRow[]): number {
+  const weeks = new Set<string>();
+  for (const row of filteredData) {
+    if (row.normalizedDate) {
+      weeks.add(toISOWeek(row.normalizedDate));
+    }
+  }
+  if (weeks.size === 0) return 0;
+
+  let total = 0;
+  for (const row of scorecardRows) {
+    if (weeks.has(row.week)) {
+      total += row.packagesDelivered;
+    }
+  }
+  return total;
+}
+
+export function formatPercent(value: number): string {
+  if (value === 0) return '0';
+  const abs = Math.abs(value);
+  const firstSig = Math.max(0, -Math.floor(Math.log10(abs)) + 1);
+  const decimals = Math.min(6, Math.max(1, firstSig + 1));
+  return parseFloat(value.toFixed(decimals)).toString();
 }

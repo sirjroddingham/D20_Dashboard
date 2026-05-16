@@ -1,14 +1,24 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useRTSStore } from '../store/useRTSStore';
-import { getEmployeeSummary } from '../lib/utils';
+import { useDAPerformanceStore } from '../store/useDAPerformanceStore';
+import { getEmployeeSummary, getTotalPackagesForDateRange, formatPercent } from '../lib/utils';
 
 export default function Element3() {
   const filteredData = useRTSStore(s => s.filteredData);
   const filters = useRTSStore(s => s.filters);
   const setFilters = useRTSStore(s => s.setFilters);
+  const scorecardRows = useDAPerformanceStore(s => s.rows);
 
-  const employeeData = useMemo(() => getEmployeeSummary(filteredData), [filteredData]);
+  const totalPackages = useMemo(
+    () => getTotalPackagesForDateRange(filteredData, scorecardRows),
+    [filteredData, scorecardRows],
+  );
+
+  const employeeData = useMemo(
+    () => getEmployeeSummary(filteredData, totalPackages),
+    [filteredData, totalPackages],
+  );
 
   const handleEmployeeClick = (name: string) => {
     if (filters.employee === name) {
@@ -32,8 +42,9 @@ export default function Element3() {
         </span>
       </div>
       {employeeData.length > 0 ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {employeeData.map((emp) => {
+        <div className="overflow-y-auto" style={{ maxHeight: '30vh' }}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {employeeData.map((emp) => {
             const isActive = filters.employee === emp.name;
             return (
               <motion.div
@@ -53,20 +64,16 @@ export default function Element3() {
                   }`}>{emp.name}</p>
                   <p className="text-xs text-text-subtle/60">Total: {emp.count}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 overflow-hidden rounded-full bg-surface-2 h-1.5">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all duration-500"
-                      style={{ width: `${Math.min(emp.percentage, 100)}%` }}
-                    />
-                  </div>
-                  <span className={`w-10 text-right text-xs font-semibold ${
-                    isActive ? ' text-text-heading' : 'text-text-subtle'
-                  }`}>{emp.percentage}%</span>
+                <div className="text-right">
+                  <p className={`text-xs font-semibold ${
+                    isActive ? 'text-text-heading' : 'text-text-subtle'
+                  }`}>of RTS: {formatPercent(emp.percentage)}%</p>
+                  <p className="text-xs text-text-subtle/60">of all pkgs: {formatPercent(emp.packagesPct)}%</p>
                 </div>
               </motion.div>
             );
           })}
+          </div>
         </div>
       ) : (
         <div className="py-8 text-center text-sm text-text-subtle/60">No employee data available for the current filters.</div>
