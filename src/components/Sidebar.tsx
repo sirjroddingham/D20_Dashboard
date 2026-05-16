@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  UserCircle, 
-  FileSpreadsheet, 
-  ChevronLeft, 
+import {
+  LayoutDashboard,
+  UserCircle,
+  FileSpreadsheet,
+  Database,
+  ChevronLeft,
   ChevronRight
 } from 'lucide-react';
 import { useLayoutStore } from '../store/useLayoutStore';
@@ -39,6 +40,7 @@ export default function Sidebar() {
   const location = useLocation();
 
   const navItems = [
+    { to: '/data', label: 'Data', icon: <Database className="h-5 w-5" /> },
     { to: '/', label: 'RTS Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
     { to: '/da-performance', label: 'DA Performance', icon: <UserCircle className="h-5 w-5" /> },
     { to: '/cdf-dsb', label: 'CDF/DSB', icon: <FileSpreadsheet className="h-5 w-5" /> },
