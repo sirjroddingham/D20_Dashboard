@@ -463,23 +463,6 @@ export default function DAPerformance() {
                       scoreLabel="Avg Overall"
                     />
                   </div>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <ScoreDistributionChart
-                      title="Trailing Overall Distribution"
-                      scores={trailingOverallChartScores}
-                      maxScore={100}
-                    />
-                    <ScoreDistributionChart
-                      title="Trailing Safety Distribution"
-                      scores={trailingSafetyChartScores}
-                      maxScore={STANDARD_SAFETY_WEIGHT}
-                    />
-                    <ScoreDistributionChart
-                      title="Trailing Quality Distribution"
-                      scores={trailingQualityChartScores}
-                      maxScore={STANDARD_QUALITY_WEIGHT}
-                    />
-                  </div>
                 </div>
 
                 <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
@@ -520,6 +503,24 @@ export default function DAPerformance() {
                       scoreLabel="Avg Quality"
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <ScoreDistributionChart
+                    title="Trailing Overall Distribution"
+                    scores={trailingOverallChartScores}
+                    maxScore={100}
+                  />
+                  <ScoreDistributionChart
+                    title="Trailing Safety Distribution"
+                    scores={trailingSafetyChartScores}
+                    maxScore={STANDARD_SAFETY_WEIGHT}
+                  />
+                  <ScoreDistributionChart
+                    title="Trailing Quality Distribution"
+                    scores={trailingQualityChartScores}
+                    maxScore={STANDARD_QUALITY_WEIGHT}
+                  />
                 </div>
               </motion.div>
             )}
