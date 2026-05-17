@@ -21,21 +21,21 @@ interface RankingTableProps {
 }
 
 const scoreColorClass = (pct: number) => {
-  if (pct >= 90) return 'bg-score-excellent text-white';
-  if (pct >= 80) return 'bg-score-good text-white';
-  if (pct >= 70) return 'bg-score-average text-gray-900';
-  if (pct >= 60) return 'bg-score-below-avg text-white';
-  if (pct >= 50) return 'bg-score-poor text-white';
-  return 'bg-score-critical text-white';
+  if (pct >= 90) return 'score-cell-excellent';
+  if (pct >= 80) return 'score-cell-good';
+  if (pct >= 70) return 'score-cell-average';
+  if (pct >= 60) return 'score-cell-below-avg';
+  if (pct >= 50) return 'score-cell-poor';
+  return 'score-cell-critical';
 };
 
 const scoreBgClass = (pct: number) => {
-  if (pct >= 90) return 'bg-score-excellent/20';
-  if (pct >= 80) return 'bg-score-good/20';
-  if (pct >= 70) return 'bg-score-average/20';
-  if (pct >= 60) return 'bg-score-below-avg/20';
-  if (pct >= 50) return 'bg-score-poor/20';
-  return 'bg-score-critical/20';
+  if (pct >= 90) return 'score-cell-excellent-bg';
+  if (pct >= 80) return 'score-cell-good-bg';
+  if (pct >= 70) return 'score-cell-average-bg';
+  if (pct >= 60) return 'score-cell-below-avg-bg';
+  if (pct >= 50) return 'score-cell-poor-bg';
+  return 'score-cell-critical-bg';
 };
 
 const titleStyle = 'bg-surface-2 text-text-subtle';
@@ -84,13 +84,13 @@ export default function RankingTable({
                   key={item.transporterId}
                   className={`border-b border-surface-3/30 last:border-b-0 ${bgCls}`}
                 >
-                  <td className={`px-2 sm:px-3 py-1 font-bold text-center ${colorCls}`}>
+                  <td className={`px-2 sm:px-3 py-1 font-bold text-center text-text-heading ${colorCls}`}>
                     {item.rank}
                   </td>
                   <td className="px-2 sm:px-3 py-1">
                     <div className="font-medium text-text-heading">{item.name}</div>
                   </td>
-                  <td className={`px-2 sm:px-3 py-1 text-right font-bold ${colorCls}`}>
+                  <td className={`px-2 sm:px-3 py-1 text-right font-bold text-text-heading ${colorCls}`}>
                     {item.score.toFixed(2)}
                   </td>
                   <td className="px-2 sm:px-3 py-1 text-right text-text-heading tabular-nums hidden sm:table-cell">
@@ -221,13 +221,13 @@ export function TrailingTable({
                   key={item.transporterId}
                   className={`border-b border-surface-3/30 last:border-b-0 ${bgCls}`}
                 >
-                  <td className={`px-2 sm:px-3 py-1 font-bold text-center ${colorCls}`}>
+                  <td className={`px-2 sm:px-3 py-1 font-bold text-center text-text-heading ${colorCls}`}>
                     {item.rank}
                   </td>
                   <td className="px-2 sm:px-3 py-1">
                     <div className="font-medium text-text-heading">{item.name}</div>
                   </td>
-                  <td className={`px-2 sm:px-3 py-1 text-right font-bold ${colorCls}`}>
+                  <td className={`px-2 sm:px-3 py-1 text-right font-bold text-text-heading ${colorCls}`}>
                     {item.avgScore.toFixed(2)}
                   </td>
                   <td className="px-2 sm:px-3 py-1 text-right text-text-heading tabular-nums hidden sm:table-cell">

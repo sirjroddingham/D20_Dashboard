@@ -2,15 +2,13 @@
 
 ## Project Overview
 
-D20 Dashboard is a multi-module analytics platform for D20 Industries, LLC. It integrates RTS,
-DA Performance, and CDF/DSB data into a unified React app deployable to GitHub Pages and a VPS.
-All modules share a common theme, layout shell, and design system.
+D20 Industries analytics platform: RTS, DA Performance, and CDF defect data in a unified React app. Deployable to GitHub Pages (HashRouter) or VPS (BrowserRouter).
 
 ## Project Location
 
 - **Local root**: `/home/jrod/CODE_PROJECTS/D20_Dashboard`
 - **GitHub repo**: `https://github.com/sirjroddingham/D20_Dashboard`
-- **All source** lives under `src/`. No nested subdirectory — the repo root IS the project root.
+- **All source** lives under `src/`. The repo root IS the project root.
 - **Data files** live under `/home/jrod/CODE_PROJECTS/D20_Scorecard/`
 
 ## Commands
@@ -27,134 +25,109 @@ npx vite build --mode production.github   # uses .env.production.github (VITE_BA
 
 **Important**: There are **no tests** in this repo. Do not attempt to run a test suite.
 
+**Dev server**: Always use `nohup npx vite --port 5173 > /tmp/vite.log 2>&1 & disown` to keep Vite alive in background. Kill with `pkill -f vite` when done testing.
+
 ## Architecture
 
 ### Routing
-- Uses `react-router-dom` with `HashRouter` (for GitHub Pages compatibility).
-- Will switch to `BrowserRouter` when deployed to the VPS server.
-- Routes are defined in `App.tsx`. All pages live under `src/pages/`.
+- `react-router-dom` with `HashRouter` (GitHub Pages). Routes in `App.tsx`, pages in `src/pages/`.
 - **Playwright must use `#/` prefix** for HashRouter (e.g., `http://localhost:5173/#/da-performance`).
+- Four routes: `/` → RTS, `/da-performance` → DA, `/cdf-dsb` → CDF, `/data` → Data Management.
 
 ### Layout Shell
-- `src/components/Layout.tsx` — wraps all pages: collapsible Sidebar + top bar + `<Outlet />`
-- `src/components/Sidebar.tsx` — collapsible sidebar navigation
-- Sidebar open/closed state is persisted in `localStorage` via `useLayoutStore`.
+- `src/components/Layout.tsx` — Sidebar + top bar + `<Outlet />` + footer
+- `src/components/Sidebar.tsx` — collapsible (240px ↔ 64px), persisted via `useLayoutStore` (localStorage: `d20-dashboard-layout`)
 
-### State / Stores (`src/store/`)
-- `useRTSStore.ts` — RTS module data, filters, and derived state
-- `useDAPerformanceStore.ts` — DA Performance: merge-on-upload (idempotent by week+transporterId), trailing averages cached in state
-- `useCDFSBStore.ts` — CDF/DSB module (**stub**, not yet implemented)
-- `useThemeStore.ts` — dark/light mode, persists to `localStorage` key `d20-dashboard-theme`
-- `useLayoutStore.ts` — sidebar open/closed state
+### Central Data Store (`src/store/useDataSourceStore.ts`)
+- **Single source of truth** for all 4 data types: RTS, Scorecard, CDF, DSB
+- Each type has rows, loaded weeks, merge (idempotent by week+key), and clear actions
+- Module-specific stores subscribe to this central store
+
+### Module Stores (`src/store/`)
+- `useRTSStore.ts` — subscribes to central store; filtered data, filter state
+- `useDAPerformanceStore.ts` — subscribes to central store; scorecard rows, trailing averages
+- `useCDFStore.ts` — derived hooks (not a Zustand store): filtered rows, employee summaries, DPMO, defect-free employees
+- `useThemeStore.ts` — dark/light mode, localStorage `d20-dashboard-theme`, `themeVersion` timestamp for chart re-renders
+- `useLayoutStore.ts` — sidebar open/closed, localStorage `d20-dashboard-layout`
 
 ### Pages (`src/pages/`)
-- `RTSDashboard.tsx` — RTS charts, filters, and detail table (fully functional)
-- `DAPerformance.tsx` — DA Performance rankings with multi-week merge, trailing averages (fully functional)
-- `CDFSB.tsx` — CDF/DSB (**placeholder**, not yet implemented)
+- `RTSDashboard.tsx` — RTS charts, filters, detail table (fully functional)
+- `DAPerformance.tsx` — DA rankings, multi-week merge, trailing averages (fully functional)
+- `CDFSB.tsx` — CDF Defect Dashboard: charts, filters, ranking tables, detail table (fully functional; DSB data parsed but not yet displayed)
+- `DataManagement.tsx` — Centralized upload hub with summary cards for all 4 data types
 
-### Data / Lib (`src/lib/`)
-- `scorecard/types.ts` — ScorecardRow, Metric, DATrailingAvg types
-- `scorecard/parseScorecard.ts` — Header-driven CSV parser, weighted score calculation, perfect thresholds
-- `rts/types.ts` — RTS-specific types
-- `headerMap.ts` — Header mapping utilities
-- `colors.ts` — Shared color constants
-- `echartsThemes.ts` — ECharts theme definitions
-- `utils.ts` — Shared utilities
+### Charts (`src/components/`)
+- `StackedBarChart.tsx` — RTS stacked bar chart with dataZoom slider
+- `RTSPieChart.tsx` — RTS distribution pie chart
+- `CDFCharts.tsx` — `CDFCategoryChart` (pie), `CDFDefectsByDayChart` (stacked bar), `CDFDefectSplitChart` (pie, unused)
+- `ScoreDistributionChart.tsx` — DA score distribution pies
+- `useChartTheme.ts` — Hook for ECharts theme + colors, re-renders on theme change
 
 ### CSV Upload
-- `CSVUpload.tsx` — Generic upload component with `onParsed` callback, NOT coupled to any store.
-- `ScorecardCSVUpload.tsx` — DA Performance-specific upload with drag-and-drop, compacts to header row.
+- `DataUpload.tsx` — Unified upload component, auto-detects file type via `detectCsvType()`
+- No `CSVUpload.tsx` or `ScorecardCSVUpload.tsx` (removed)
+
+### Data / Lib (`src/lib/`)
+- `rts/parseRTSCSV.ts` — RTS parser
+- `scorecard/parseScorecard.ts` — DA Scorecard parser with weighted score calculation
+- `cdf/parseCDF.ts` — CDF defect parser
+- `dsb/parseDSB.ts` — DSB concession parser
+- `detectCsvType.ts` — Auto-detects CSV type from headers
+- `colors.ts` / `echartsThemes.ts` — Shared theme, CSS vars via `[data-theme]` on `<html>`
+- `utils.ts` — `getBarChartData` and shared utilities
 
 ## Scoring Rules (from `Code.js`)
 
 ### Metrics
-- **Safety** (5 metrics, excludes FICO): Speeding, Seatbelt-Off, Distractions, Sign/Signal, Following Distance
-- **Quality** (5 metrics, excludes PSB): CDF DPMO, CED, DCR, DSB DPMO, POD
-- Each metric has `score * (weight/100)`, normalized to standard weights (52.1 safety, 48.2 quality) when total weight differs.
+- **Safety** (5, excludes FICO): Speeding, Seatbelt-Off, Distractions, Sign/Signal, Following Distance
+- **Quality** (5, excludes PSB): CDF DPMO, CED, DCR, DSB DPMO, POD
+- `score * (weight/100)`, normalized to standard weights (52.1 safety, 48.2 quality)
 
 ### Perfect Thresholds
-- Perfect Overall: 99.995
-- Perfect Safety: 52.095
-- Perfect Quality: 48.195
+- Perfect Overall: 99.995 | Safety: 52.095 | Quality: 48.195
 
 ### Rankings
-- Top/Bottom 10 per category per week
-- Perfect-score expansion: if >N perfect scorers exist, show all perfect instead of top N
+- Top/Bottom 10 per category per week; perfect-score expansion shows all perfect scorers
 - Trailing Averages (multi-week): grouped by transporterId, scores averaged, packages summed
-- Heat map coloring: 90%+ green, 80% yellow-green, 70% yellow, 60% orange, 50% red-orange, <50% red
-- "No Safety Data" section for DAs without safety metrics
+- Heat map: 90%+ green, 80% yellow-green, 70% yellow, 60% orange, 50% red-orange, <50% red
 
 ### Key Identifiers
-- **Transporter ID** is the guaranteed-unique primary key for DA joins.
-- Scorecard CSV is self-contained: includes `Packages Delivered` — no separate upload needed.
-- Scorecard CSV header `"Delivery Associate "` has a trailing space — must trim.
-
-## Styling
-
-- **Dark mode** uses `data-theme` attribute on `<html>` toggled by `ThemeProvider`.
-- CSS variables are defined in `src/index.css` for both `[data-theme="light"]` and `[data-theme="dark"]`.
-- Tailwind is configured via `@tailwindcss/vite` plugin in `vite.config.ts`.
+- **Transporter ID** is the guaranteed-unique primary key for DA joins
+- Scorecard CSV is self-contained (includes `Packages Delivered`)
+- Header `"Delivery Associate "` has a trailing space — parser must trim
 
 ## Environment / Deployment
 
 ### .env files
 - `.env` — local dev (`VITE_BASE_PATH=/`)
-- `.env.production` — VPS server build (`VITE_BASE_PATH=/`)
-- `.env.production.github` — GitHub Pages build (`VITE_BASE_PATH=/D20_Dashboard/`)
+- `.env.production` — VPS (`VITE_BASE_PATH=/`)
+- `.env.production.github` — GitHub Pages (`VITE_BASE_PATH=/D20_Dashboard/`)
 
-### Deployment targets
-- **GitHub Pages** (temporary): `https://sirjroddingham.github.io/D20_Dashboard/`
-  Uses `HashRouter` — no server-side redirect needed.
-- **VPS (Ubuntu)**: Dedicated server, nginx with `try_files $uri /index.html`.
-  Will switch to `BrowserRouter` at that time.
-
-## Charts (ECharts)
-
-- **Pie Chart**: Hover-only labels, click-to-filter on RTS codes. No static labels to avoid overlap.
-- **Stacked Bar Chart**: Default shows "OODT" + "Other RTS". When filters are active, dynamically
-  stacks all unique RTS codes from the filtered dataset. Uses `dataZoom` slider + `axis.interval: 'auto'`
-  to prevent date label overlap.
-- **ScoreDistributionChart**: Renders pie charts for Overall/Safety/Quality score bucket distributions.
+### Deployment
+- **GitHub Pages** (temporary): `https://sirjroddingham.github.io/D20_Dashboard/` — HashRouter
+- **VPS (Ubuntu)**: nginx `try_files $uri /index.html` — switch to BrowserRouter
 
 ## Gotchas
 
-- `tsc -b` is required before `vite build` — project uses TypeScript project references.
-- Dark/light theming is handled through `useThemeStore` which persists preference in `localStorage`.
-- **Zustand v5**: Selectors returning new objects/arrays cause infinite re-renders — must cache in state.
-- **Scorecard CSV header** `"Delivery Associate "` has a trailing space — parser must trim.
-- **Multi-week merge**: `selectedWeek` must be synced to `mostRecentWeek` via `useEffect` on upload, otherwise `weekRows` returns ALL rows from ALL weeks, causing duplicate React keys.
-- **Trailing Averages**: Only appears when 2+ weeks are loaded. Shows top/bottom 30 per category.
+- `tsc -b` required before `vite build` — TypeScript project references (`tsconfig.app.json` + `tsconfig.node.json`)
+- **Zustand v5**: Selectors returning new objects/arrays cause infinite re-renders — must cache in state
+- **No StrictMode**: `main.tsx` renders without `StrictMode`
+- **Multi-week merge**: `selectedWeek` must sync to `mostRecentWeek` on upload, otherwise `weekRows` returns ALL rows from ALL weeks (duplicate React keys)
+- **Trailing Averages**: Only appears when 2+ weeks loaded; top/bottom 30 per category
+- **ECharts 6 + echarts-for-react 3.0.6**: `theme` and `opts` props must be memoized (`useMemo`) to prevent instance disposal. Inline objects cause dispose+recreate on every render.
+- **ECharts instance disposal in dev**: Vite HMR can dispose instances during hot updates. Test chart interactions in preview (`npm run preview`) for reliable behavior.
+- **CDF/DSB**: DSB data is parsed and stored in `useDataSourceStore` but not yet displayed in the CDF page UI
+- **Unused exports**: `CDFDefectSplitChart` and `TopPerformersTable` exist but are not rendered
+- **`no-case-declarations` lint error**: Pre-existing in `DataUpload.tsx` (lines 152-153)
+- **`react-hooks/set-state-in-effect` lint error**: Pre-existing in `DAPerformance.tsx` (line 46)
 
 ## Available Data Files
 
+- RTS combined: `D20_Scorecard/RTS_Dashboard/TEST/Quality_RTS_D2IN_DGF1_2026_W11-W16_combined_fixed.csv`
 - Scorecard W15: `D20_Scorecard/Scorecard_Overall/DSP_Overview_Dashboard_D2IN_DGF1_2026-W15.csv` (80 DAs)
 - Scorecard W17: `D20_Scorecard/DA_BONUS/Week 17-2026/DSP_Overview_Dashboard_D2IN_DGF1_2026-W17.csv`
 - Scorecard W18: `D20_Scorecard/DA_BONUS/Week 18-2026/DSP_Overview_Dashboard_D2IN_DGF1_2026-W18.csv`
 - Scorecard W19: `D20_Scorecard/DA_BONUS/Week 19-2026/DSP_Overview_Dashboard_D2IN_DGF1_2026-W19.csv` (80 DAs)
+- CDF W18: `D20_Scorecard/DA_BONUS/Week 18-2026/DSP_Customer_Delivery_Feedback_negative_DGF1_2026-W18.csv`
 - CDF W19: `D20_Scorecard/DA_BONUS/Week 19-2026/DSP_Customer_Delivery_Feedback_negative_DGF1_2026-W19.csv` (57 rows)
 - DSB W19: `D20_Scorecard/DA_BONUS/Week 19-2026/DSP_Delivery_Concessions_DGF1_2026-W19.csv` (17 rows)
-
-## Progress
-
-### Done (Phase 1)
-- Full repo rename, routing shell, `Layout`, collapsible `Sidebar`, `ThemeToggle`, placeholder pages
-- RTS dashboard fully functional with upload, parsing, filtering, charts, detail table
-- DA Performance tab fully implemented:
-  - Scorecard CSV parser with header-driven column mapping, resilient to column reorder
-  - `useDAPerformanceStore` with merge-on-upload (idempotent by week+transporterId)
-  - Week selector with auto-select on new upload
-  - Overall/Safety/Quality ranking tables (top/bottom 10)
-  - Perfect-score expansion (shows all if >10 perfect scorers)
-  - Heat map coloring per Code.js thresholds
-  - "No Safety Data" section for DAs without safety metrics
-  - Score distribution pie charts per category (echarts)
-  - Trailing Averages (top/bottom 30, multi-week)
-  - Multi-week merge verified with 0 console errors
-
-### Pending (Phase 2)
-- CDF/DSB combined tab — not yet started
-  - Define CDFRow and DSBRow types from sample files
-  - Write CDF and DSB CSV parsers (both join on Transporter ID)
-  - Build `useCDFSBStore` — accepts both CDF and DSB uploads, merges into unified per-DA defect summary
-  - CDF/DSB page: combined defect tables, DPMO column (joins to `useDAPerformanceStore` by transporterId)
-  - CDF/DSB page: category breakdown chart and defect-free vs with-defects split chart

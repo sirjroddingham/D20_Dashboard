@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,13 +9,14 @@ import {
   useEmployeeSummaries,
   useCategoryTotals,
   useDateRange,
+  useDefectFreeEmployees,
   type CDFFilterState,
 } from '../store/useCDFStore';
 import DataUpload from '../components/DataUpload';
 import CDFFilterBar from '../components/CDFFilterBar';
 import CDFDetailTable from '../components/CDFDetailTable';
-import { BottomPerformersTable } from '../components/CDFRankingTables';
-import { CDFCategoryChart } from '../components/CDFCharts';
+import { BottomPerformersTable, DefectFreeTable } from '../components/CDFRankingTables';
+import { CDFCategoryChart, CDFDefectsByDayChart } from '../components/CDFCharts';
 
 const defaultFilters: CDFFilterState = {
   employee: '',
@@ -53,15 +54,12 @@ export default function CDFSB() {
   };
 
   const filteredRows = useFilteredRows(cdfRows, selectedWeek, filters);
-  const employeeSummaries = useEmployeeSummaries(cdfRows, scorecardRows, selectedWeek);
-  const categoryTotals = useCategoryTotals(cdfRows, selectedWeek);
+  const employeeSummaries = useEmployeeSummaries(filteredRows, scorecardRows, selectedWeek);
+  const defectFreeSummaries = useDefectFreeEmployees(cdfRows, scorecardRows);
+  const categoryTotals = useCategoryTotals(filteredRows);
   const dateRange = useDateRange(cdfRows);
 
-  const weekRows = useMemo(() => {
-    if (selectedWeek === '__all__') return cdfRows;
-    if (!selectedWeek) return cdfRows;
-    return filteredRows;
-  }, [cdfRows, selectedWeek, filteredRows]);
+  const weekRows = filteredRows;
 
   const hasData = cdfRows.length > 0;
 
@@ -175,10 +173,13 @@ export default function CDFSB() {
               onFilterChange={handleFilterChange}
             />
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <CDFCategoryChart categoryTotals={categoryTotals} />
-              <BottomPerformersTable summaries={employeeSummaries} />
+              <CDFDefectsByDayChart rows={weekRows} />
             </div>
+
+            <BottomPerformersTable summaries={employeeSummaries} />
+            <DefectFreeTable summaries={defectFreeSummaries} />
 
             <CDFDetailTable rows={filteredRows} />
           </motion.div>

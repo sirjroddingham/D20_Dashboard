@@ -335,7 +335,7 @@ export default function DAPerformance() {
             {/* === OVERALL === */}
             <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5">
               <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Overall Performance Rankings</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topOverall.length > 10 ? `Top Overall Performers — All Perfect Scores (${topOverall.length})` : 'Top 10 Overall Performers'}
@@ -365,7 +365,7 @@ export default function DAPerformance() {
             {/* === SAFETY === */}
             <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5">
               <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Safety Group Rankings</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topSafety.length > 10 ? `Top Safety Performers — All Perfect Scores (${topSafety.length})` : 'Top 10 Safety Performers'}
@@ -401,7 +401,7 @@ export default function DAPerformance() {
             {/* === QUALITY === */}
             <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5">
               <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Quality Group Rankings</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch">
                 <div className="space-y-4">
                   <RankingTable
                     title={topQuality.length > 10 ? `Top Quality Performers — All Perfect Scores (${topQuality.length})` : 'Top 10 Quality Performers'}

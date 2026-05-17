@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, useCallback } from 'react';
+import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
 import { useRTSStore } from '../store/useRTSStore';
@@ -11,7 +11,7 @@ export default function StackedBarChart() {
   const filters = useRTSStore(s => s.filters);
   const setFilters = useRTSStore(s => s.setFilters);
   const chartRef = useRef<ReactECharts>(null);
-  const hoveredSeries = useRef<string | null>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const barData = useMemo(() => getBarChartData(filteredData), [filteredData]);
   const dates = useMemo(() => barData.map(d => d.date), [barData]);
@@ -48,25 +48,19 @@ export default function StackedBarChart() {
     const chart = chartRef.current?.getEchartsInstance();
     if (!chart) return;
 
-    const handleMouseMove = (params: { seriesIndex?: number; seriesName?: string }) => {
-      hoveredSeries.current = params.seriesName || null;
-      if (params.seriesIndex !== undefined) {
-        chart.dispatchAction({
-          type: 'showTip',
-          seriesIndex: params.seriesIndex,
-        });
-      }
+    const onMove = (p: { seriesIndex?: number }) => {
+      setHoveredIdx(p.seriesIndex ?? null);
     };
-    const handleMouseOut = () => {
-      hoveredSeries.current = null;
+    const onOut = () => {
+      setHoveredIdx(null);
     };
 
-    chart.on('mousemove', handleMouseMove);
-    chart.on('globalout', handleMouseOut);
+    chart.on('mousemove', onMove);
+    chart.on('globalout', onOut);
 
     return () => {
-      chart.off('mousemove', handleMouseMove);
-      chart.off('globalout', handleMouseOut);
+      chart.off('mousemove', onMove);
+      chart.off('globalout', onOut);
     };
   }, [codes]);
 
@@ -104,27 +98,21 @@ export default function StackedBarChart() {
   const option = useMemo(() => ({
     tooltip: {
       trigger: 'axis',
-      formatter: (params: { axisValue?: string; seriesName?: string; value?: number; marker?: string; color?: string }[]) => {
+      formatter: (params: { axisValue?: string; seriesName?: string; value?: number; color?: string; seriesIndex?: number }[]) => {
         const date = (params[0]?.axisValue as string) || '';
-
         let html = `<div style="font-weight:600;margin-bottom:6px;color:${colors.tooltip.text};">${date}</div>`;
         for (const p of params) {
-          const isHovered = p.seriesName === hoveredSeries.current;
-          const dotColor = p.color || '';
-          const rowColor = isHovered ? dotColor : colors.tooltip.muted;
-          const fontWeight = isHovered ? '600' : '400';
-          const bgColor = isHovered ? colors.tooltip.hoverBg : 'transparent';
-          const borderColor = isHovered ? colors.tooltip.hoverBorder : 'transparent';
-          html += `<div style="display:flex;justify-content:space-between;gap:16px;color:${rowColor};font-weight:${fontWeight};background:${bgColor};border-left:3px solid ${borderColor};padding:2px 6px;margin:1px 0;">
-            <span style="display:flex;align-items:center;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${dotColor};margin-right:6px;"></span>${p.seriesName}:</span>
-            <strong style="color:${rowColor};">${p.value}</strong>
+          const isHov = p.seriesIndex === hoveredIdx;
+          const c = isHov ? (p.color || '') : colors.tooltip.muted;
+          const fw = isHov ? '600' : '400';
+          html += `<div style="display:flex;justify-content:space-between;gap:16px;color:${c};font-weight:${fw};padding:2px 0;">
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color};margin-right:6px;"></span>${p.seriesName}:</span>
+            <span>${p.value}</span>
           </div>`;
         }
         const row = barData.find(d => d.date === date);
         if (row) {
-          html += `<div style="border-top:1px solid ${colors.axisLine};margin-top:6px;padding-top:4px;font-weight:600;color:${colors.tooltip.text};">
-            Total RTS: ${row.total}
-          </div>`;
+          html += `<div style="border-top:1px solid ${colors.axisLine};margin-top:6px;padding-top:4px;font-weight:600;color:${colors.tooltip.text};">Total: ${row.total}</div>`;
         }
         return html;
       },
@@ -164,7 +152,10 @@ export default function StackedBarChart() {
       { type: 'inside' as const, xAxisIndex: [0], start: 0, end: 100 },
     ],
     series,
-  }), [barData, dates, series, colors]);
+  }), [barData, dates, series, colors, hoveredIdx]);
+
+  const chartStyle = useMemo(() => ({ height: 320, width: '100%' }), []);
+  const chartOpts = useMemo(() => ({ renderer: 'canvas' as const }), []);
 
   return (
     <motion.div
@@ -183,8 +174,9 @@ export default function StackedBarChart() {
         ref={chartRef}
         option={option}
         theme={chartTheme}
-        style={{ height: 320, width: '100%' }}
-        opts={{ renderer: 'canvas' }}
+        style={chartStyle}
+        opts={chartOpts}
+        notMerge={false}
       />
     </motion.div>
   );

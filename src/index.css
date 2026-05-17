@@ -60,15 +60,15 @@
   --radius: 0.375rem;
 
   --surface-0: 0 0% 100%;
-  --surface-1: 210 4% 98%;
-  --surface-2: 214 32% 94%;
-  --surface-3: 214 32% 91%;
-  --surface-hover: 214 32% 94%;
+  --surface-1: 210 5% 97%;
+  --surface-2: 214 32% 92%;
+  --surface-3: 214 32% 88%;
+  --surface-hover: 214 32% 92%;
 
   --text-heading: 222 47% 11%;
-  --text-body: 215 16% 35%;
-  --text-subtle: 215 16% 47%;
-  --text-faint: 215 14% 60%;
+  --text-body: 222 47% 20%;
+  --text-subtle: 215 16% 35%;
+  --text-faint: 215 16% 48%;
   --text-icon: 214 20% 40%;
 
   --chart-tooltip-bg: 255 255 255;
@@ -105,6 +105,13 @@
   --score-below-avg-bg: 30 100% 50% / 0.08;
   --score-poor-bg: 14 90% 54% / 0.08;
   --score-critical-bg: 0 65% 49% / 0.08;
+
+  --score-excellent-dm-bg: 144 60% 32%;
+  --score-good-dm-bg: 82 35% 48%;
+  --score-average-dm-bg: 48 85% 55%;
+  --score-below-avg-dm-bg: 30 85% 50%;
+  --score-poor-dm-bg: 14 80% 52%;
+  --score-critical-dm-bg: 0 70% 50%;
 
   --title-overall: 168 73% 42%;
   --title-safety: 25 95% 53%;
@@ -158,9 +165,9 @@
   --surface-hover: 216 36% 16%;
 
   --text-heading: 212 23% 84%;
-  --text-body: 217 15% 52%;
-  --text-subtle: 215 16% 62%;
-  --text-faint: 215 13% 38%;
+  --text-body: 210 18% 70%;
+  --text-subtle: 215 16% 55%;
+  --text-faint: 215 13% 40%;
   --text-icon: 215 25% 48%;
 
   --chart-tooltip-bg: 20 24 36;
@@ -327,4 +334,159 @@ input[type="date"]::-webkit-clear-button {
 select option {
   background-color: hsl(var(--card));
   color: hsl(var(--card-foreground));
+}
+
+/* Theme-aware heat map cells (background only) */
+.score-cell-excellent {
+  background-color: rgb(103, 194, 150);
+}
+.score-cell-good {
+  background-color: rgb(161, 196, 140);
+}
+.score-cell-average {
+  background-color: rgb(234, 201, 111);
+}
+.score-cell-below-avg {
+  background-color: rgb(234, 171, 103);
+}
+.score-cell-poor {
+  background-color: rgb(231, 155, 130);
+}
+.score-cell-critical {
+  background-color: rgb(225, 120, 120);
+}
+
+.score-cell-excellent-bg {
+  background-color: rgb(165, 220, 190);
+}
+.score-cell-good-bg {
+  background-color: rgb(196, 220, 180);
+}
+.score-cell-average-bg {
+  background-color: rgb(242, 222, 168);
+}
+.score-cell-below-avg-bg {
+  background-color: rgb(240, 210, 172);
+}
+.score-cell-poor-bg {
+  background-color: rgb(238, 195, 180);
+}
+.score-cell-critical-bg {
+  background-color: rgb(235, 170, 170);
+}
+
+[data-theme="dark"] .score-cell-excellent {
+  background-color: rgb(52, 120, 88);
+}
+[data-theme="dark"] .score-cell-good {
+  background-color: rgb(85, 115, 72);
+}
+[data-theme="dark"] .score-cell-average {
+  background-color: rgb(150, 128, 60);
+}
+[data-theme="dark"] .score-cell-below-avg {
+  background-color: rgb(140, 105, 65);
+}
+[data-theme="dark"] .score-cell-poor {
+  background-color: rgb(135, 85, 72);
+}
+[data-theme="dark"] .score-cell-critical {
+  background-color: rgb(127, 65, 65);
+}
+
+[data-theme="dark"] .score-cell-excellent-bg {
+  background-color: rgb(42, 95, 70);
+}
+[data-theme="dark"] .score-cell-good-bg {
+  background-color: rgb(68, 90, 58);
+}
+[data-theme="dark"] .score-cell-average-bg {
+  background-color: rgb(118, 100, 48);
+}
+[data-theme="dark"] .score-cell-below-avg-bg {
+  background-color: rgb(110, 82, 52);
+}
+[data-theme="dark"] .score-cell-poor-bg {
+  background-color: rgb(106, 68, 58);
+}
+[data-theme="dark"] .score-cell-critical-bg {
+  background-color: rgb(100, 52, 52);
+}
+
+.defect-cell-low {
+  background-color: rgb(252, 211, 140);
+}
+.defect-cell-medium {
+  background-color: rgb(248, 190, 100);
+}
+.defect-cell-high {
+  background-color: rgb(240, 155, 90);
+}
+.defect-cell-critical {
+  background-color: rgb(225, 115, 105);
+}
+
+.dpmo-cell-yellow {
+  background-color: rgb(234, 200, 120);
+}
+.dpmo-cell-amber {
+  background-color: rgb(240, 180, 100);
+}
+.dpmo-cell-orange {
+  background-color: rgb(235, 155, 95);
+}
+.dpmo-cell-high {
+  background-color: rgb(220, 125, 100);
+}
+.dpmo-cell-very-high {
+  background-color: rgb(210, 100, 100);
+}
+.dpmo-cell-critical {
+  background-color: rgb(195, 75, 80);
+}
+
+.defect-free-zero {
+  background-color: rgb(130, 210, 180);
+}
+.defect-free-total {
+  background-color: rgb(240, 210, 140);
+}
+
+[data-theme="dark"] .defect-cell-low {
+  background-color: rgb(140, 115, 55);
+}
+[data-theme="dark"] .defect-cell-medium {
+  background-color: rgb(130, 100, 50);
+}
+[data-theme="dark"] .defect-cell-high {
+  background-color: rgb(125, 80, 50);
+}
+[data-theme="dark"] .defect-cell-critical {
+  background-color: rgb(110, 60, 60);
+}
+
+[data-theme="dark"] .dpmo-cell-yellow {
+  background-color: rgb(135, 115, 55);
+}
+[data-theme="dark"] .dpmo-cell-amber {
+  background-color: rgb(130, 100, 52);
+}
+[data-theme="dark"] .dpmo-cell-orange {
+  background-color: rgb(125, 82, 55);
+}
+[data-theme="dark"] .dpmo-cell-high {
+  background-color: rgb(115, 65, 55);
+}
+[data-theme="dark"] .dpmo-cell-very-high {
+  background-color: rgb(110, 55, 55);
+}
+[data-theme="dark"] .dpmo-cell-critical {
+  background-color: rgb(100, 45, 50);
+}
+
+[data-theme="dark"] .defect-free-zero {
+  background-color: rgb(48, 105, 85);
+}
+[data-theme="dark"] .defect-free-total {
+  background-color: rgb(130, 110, 60);
 }

@@ -21,7 +21,7 @@ interface EmployeeSummary {
   trackingIds: string[];
   dpmo: number | null;
   packages: number;
-  weeksWithDefects: number;
+  weeksInRange: number;
 }
 
 export function useCDFData() {
@@ -50,7 +50,7 @@ export function useFilteredRows(rows: CDFRow[], selectedWeek: string, filters: C
     }
 
     if (filters.employee) {
-      filtered = filtered.filter(r => r.deliveryAssociate === filters.employee);
+      filtered = filtered.filter(r => r.deliveryAssociateName === filters.employee);
     }
 
     if (filters.categories.length > 0) {
@@ -91,17 +91,23 @@ export function useFilteredRows(rows: CDFRow[], selectedWeek: string, filters: C
   }, [rows, selectedWeek, filters]);
 }
 
-export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ transporterId: string; packagesDelivered: number }>, selectedWeek: string): EmployeeSummary[] {
+export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ transporterId: string; packagesDelivered: number; week: string }>, selectedWeek: string): EmployeeSummary[] {
   return useMemo(() => {
-    let scopedRows = rows;
-
-    if (selectedWeek && selectedWeek !== '__all__') {
-      scopedRows = rows.filter(r => r.week === selectedWeek);
-    }
+    const scopedRows = rows;
 
     const pkgMap: Record<string, number> = {};
-    scorecardRows.forEach(sr => {
+    const scRows = selectedWeek && selectedWeek !== '__all__'
+      ? scorecardRows.filter(sr => sr.week === selectedWeek)
+      : scorecardRows;
+    scRows.forEach(sr => {
       pkgMap[sr.transporterId] = (pkgMap[sr.transporterId] || 0) + sr.packagesDelivered;
+    });
+
+    // Count distinct weeks per transporter from scorecard
+    const weekSetMap: Record<string, Set<string>> = {};
+    scRows.forEach(sr => {
+      if (!weekSetMap[sr.transporterId]) weekSetMap[sr.transporterId] = new Set();
+      weekSetMap[sr.transporterId].add(sr.week);
     });
 
     const empMap = new Map<string, EmployeeSummary>();
@@ -118,7 +124,7 @@ export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ tran
           trackingIds: [],
           dpmo: null,
           packages: pkgMap[r.deliveryAssociate] || 0,
-          weeksWithDefects: 0,
+          weeksInRange: weekSetMap[r.deliveryAssociate]?.size || 0,
         });
       }
 
@@ -134,13 +140,6 @@ export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ tran
     const summaries = Array.from(empMap.values());
 
     summaries.forEach(emp => {
-      const weeks = new Set(
-        scopedRows
-          .filter(r => r.deliveryAssociate === emp.transporterId && r.defectCategories.length > 0)
-          .map(r => r.week)
-      );
-      emp.weeksWithDefects = weeks.size;
-
       if (emp.packages > 0 && emp.totalDefects > 0) {
         emp.dpmo = Math.round((emp.totalDefects / emp.packages) * 1000000);
       }
@@ -151,21 +150,61 @@ export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ tran
   }, [rows, scorecardRows, selectedWeek]);
 }
 
-export function useCategoryTotals(rows: CDFRow[], selectedWeek: string): Record<string, number> {
+export function useCategoryTotals(rows: CDFRow[]): Record<string, number> {
   return useMemo(() => {
-    let scopedRows = rows;
-    if (selectedWeek && selectedWeek !== '__all__') {
-      scopedRows = rows.filter(r => r.week === selectedWeek);
-    }
     const totals: Record<string, number> = {};
     CDF_DEFECT_COLUMNS.forEach(c => { totals[c] = 0; });
-    scopedRows.forEach(r => {
+    rows.forEach(r => {
       CDF_DEFECT_COLUMNS.forEach(c => {
         if (r[c as keyof CDFRow] as boolean) totals[c]++;
       });
     });
     return totals;
-  }, [rows, selectedWeek]);
+  }, [rows]);
+}
+
+export function useDefectFreeEmployees(
+  rows: CDFRow[],
+  scorecardRows: Array<{ transporterId: string; name: string; packagesDelivered: number; week: string }>,
+): EmployeeSummary[] {
+  return useMemo(() => {
+    const idsWithDefects = new Set(rows.map(r => r.deliveryAssociate));
+
+    const pkgMap: Record<string, number> = {};
+    const nameMap: Record<string, string> = {};
+    const weekSetMap: Record<string, Set<string>> = {};
+    scorecardRows.forEach(sr => {
+      pkgMap[sr.transporterId] = (pkgMap[sr.transporterId] || 0) + sr.packagesDelivered;
+      nameMap[sr.transporterId] = sr.name;
+      if (!weekSetMap[sr.transporterId]) weekSetMap[sr.transporterId] = new Set();
+      weekSetMap[sr.transporterId].add(sr.week);
+    });
+
+    const cats: Record<string, number> = {};
+    CDF_DEFECT_COLUMNS.forEach(c => { cats[c] = 0; });
+
+    const seen = new Set<string>();
+    const results: EmployeeSummary[] = [];
+    scorecardRows.forEach(sr => {
+      if (seen.has(sr.transporterId)) return;
+      seen.add(sr.transporterId);
+      if (!idsWithDefects.has(sr.transporterId)) {
+        results.push({
+          transporterId: sr.transporterId,
+          name: sr.name,
+          totalDefects: 0,
+          categories: { ...cats },
+          trackingIds: [],
+          dpmo: null,
+          packages: pkgMap[sr.transporterId] || 0,
+          weeksInRange: weekSetMap[sr.transporterId]?.size || 0,
+        });
+      }
+    });
+
+    results.sort((a, b) => b.packages - a.packages);
+    return results;
+  }, [rows, scorecardRows]);
 }
 
 export function useUniqueEmployees(rows: CDFRow[]): string[] {
