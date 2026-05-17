@@ -14,8 +14,8 @@ import {
 import DataUpload from '../components/DataUpload';
 import CDFFilterBar from '../components/CDFFilterBar';
 import CDFDetailTable from '../components/CDFDetailTable';
-import { BottomPerformersTable, TopPerformersTable } from '../components/CDFRankingTables';
-import { CDFCategoryChart, CDFDefectSplitChart } from '../components/CDFCharts';
+import { BottomPerformersTable } from '../components/CDFRankingTables';
+import { CDFCategoryChart } from '../components/CDFCharts';
 
 const defaultFilters: CDFFilterState = {
   employee: '',
@@ -177,12 +177,7 @@ export default function CDFSB() {
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <CDFCategoryChart categoryTotals={categoryTotals} />
-              <CDFDefectSplitChart summaries={employeeSummaries} />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <BottomPerformersTable summaries={employeeSummaries} />
-              <TopPerformersTable summaries={employeeSummaries} />
             </div>
 
             <CDFDetailTable rows={filteredRows} />
