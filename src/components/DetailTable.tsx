@@ -213,12 +213,12 @@ export default function DetailTable() {
                   <td className="px-4 py-2">
                     <span
                       title={row.rtsCode}
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium max-w-full truncate ${
+                      className={`pill max-w-full truncate ${
                       row.rtsCode === 'OUT OF DRIVING TIME'
                         ? 'bg-destructive/20 text-destructive'
                         : row.rtsCode === 'NO RTS CODE SELECTED'
                         ? 'bg-secondary/20 text-secondary'
-                         : 'surface-elevated text-text-subtle'
+                         : 'pill-default'
                     }`}
                     >
                       {row.rtsCode}
