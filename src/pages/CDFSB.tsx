@@ -67,7 +67,7 @@ export default function CDFSB() {
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4">
-      <div className="flex items-center justify-between rounded-lg bg-surface-1 p-4 border border-surface-3 backdrop-blur-sm">
+      <div className="flex items-center justify-between rounded-lg bg-surface-1 p-4 border border-surface-3">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-medium text-text-heading">CDF / DSB</h1>
           {cdfLastUpload && (
@@ -142,7 +142,7 @@ export default function CDFSB() {
             transition={{ duration: 0.4 }}
             className="space-y-4"
           >
-            <div className="flex items-center gap-4 rounded-lg section-card backdrop-blur-sm p-4">
+            <div className="flex items-center gap-4 rounded-lg section-card p-4">
               <label className="text-sm font-medium text-text-subtle">Week:</label>
               <select
                 value={selectedWeek}

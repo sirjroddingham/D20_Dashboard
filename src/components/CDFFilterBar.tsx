@@ -56,7 +56,7 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-lg section-card backdrop-blur-sm p-4"
+      className="rounded-lg section-card p-4"
     >
       <div className="flex items-center gap-3">
         <Filter className="h-4 w-4 text-text-subtle" />
@@ -130,8 +130,8 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
                 onClick={() => toggleCategory(cat)}
                 className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
                   filters.categories.includes(cat)
-                    ? 'bg-primary/40 text-primary'
-                    : 'surface-elevated text-text-subtle hover:text-text-heading'
+                    ? 'bg-rts-active-bg text-rts-active-text'
+                    : 'text-text-subtle hover:text-text-heading'
                 }`}
                 title={CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS]}
               >
