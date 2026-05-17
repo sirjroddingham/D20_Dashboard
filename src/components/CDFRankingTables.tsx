@@ -9,23 +9,22 @@ interface CDFRankingTablesProps {
 
 const titleStyle = 'bg-surface-2 text-text-subtle';
 
-const defectColorClass = (value: number, maxValue: number) => {
-  if (maxValue === 0 || value === 0) return 'bg-emerald-500/20 text-emerald-400';
-  const pct = (value / maxValue) * 100;
-  if (pct >= 80) return 'bg-red-500/30 text-red-400';
-  if (pct >= 60) return 'bg-orange-500/30 text-orange-400';
-  if (pct >= 40) return 'bg-yellow-500/20 text-yellow-400';
-  return 'bg-emerald-500/20 text-emerald-400';
+const defectColorClass = (value: number) => {
+  if (value === 0) return '';
+  if (value >= 6) return 'bg-red-500/30 text-red-400';
+  if (value >= 4) return 'bg-orange-500/30 text-orange-400';
+  if (value >= 2) return 'bg-yellow-500/20 text-yellow-400';
+  return 'bg-amber-500/15 text-amber-300';
 };
 
 const dpmoColorClass = (dpmo: number | null, maxDPMO: number) => {
   if (dpmo === null || dpmo === 0) return 'text-text-subtle';
-  if (maxDPMO === 0) return 'bg-emerald-500/20 text-emerald-400';
+  if (maxDPMO === 0) return '';
   const pct = (dpmo / maxDPMO) * 100;
   if (pct >= 80) return 'bg-red-500/30 text-red-400';
   if (pct >= 60) return 'bg-orange-500/30 text-orange-400';
   if (pct >= 40) return 'bg-yellow-500/20 text-yellow-400';
-  return 'bg-emerald-500/20 text-emerald-400';
+  return '';
 };
 
 export function BottomPerformersTable({ summaries }: CDFRankingTablesProps) {
@@ -70,19 +69,19 @@ export function BottomPerformersTable({ summaries }: CDFRankingTablesProps) {
           <tbody>
             {bottomData.map((emp, idx) => (
               <tr key={emp.transporterId} className="border-b border-surface-3/30 last:border-b-0">
-                <td className="px-2 sm:px-3 py-1 text-center text-red-400 font-bold">{idx + 1}</td>
+                <td className="px-2 sm:px-3 py-1 text-center font-bold">{idx + 1}</td>
                 <td className="px-2 sm:px-3 py-1">
                   <div className="font-medium text-text-heading">{emp.name}</div>
                 </td>
                 {CDF_DEFECT_COLUMNS.map(c => {
                   const val = emp.categories[c] || 0;
                   return (
-                    <td key={c} className={`px-2 sm:px-3 py-1 text-center font-medium ${defectColorClass(val, maxByCat[c])}`}>
+                    <td key={c} className={`px-2 sm:px-3 py-1 text-center font-medium ${defectColorClass(val)}`}>
                       {val}
                     </td>
                   );
                 })}
-                <td className="px-2 sm:px-3 py-1 text-right font-bold text-red-400">{emp.totalDefects}</td>
+                <td className="px-2 sm:px-3 py-1 text-right font-bold">{emp.totalDefects}</td>
                 <td className={`px-2 sm:px-3 py-1 text-right font-bold tabular-nums hidden sm:table-cell ${dpmoColorClass(emp.dpmo, maxDPMO)}`}>
                   {emp.dpmo !== null ? emp.dpmo.toLocaleString() : 'N/A'}
                 </td>
