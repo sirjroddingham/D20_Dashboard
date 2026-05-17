@@ -46,13 +46,7 @@ export function useFilteredRows(rows: CDFRow[], selectedWeek: string, filters: C
     let filtered = rows;
 
     if (selectedWeek && selectedWeek !== '__all__') {
-      filtered = filtered.filter(r => {
-        if (!r.deliveryDate) return false;
-        const d = new Date(r.deliveryDate);
-        if (isNaN(d.getTime())) return false;
-        const weekStr = getISOWeekString(d);
-        return weekStr === selectedWeek;
-      });
+      filtered = filtered.filter(r => r.week === selectedWeek);
     }
 
     if (filters.employee) {
@@ -102,12 +96,7 @@ export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ tran
     let scopedRows = rows;
 
     if (selectedWeek && selectedWeek !== '__all__') {
-      scopedRows = rows.filter(r => {
-        if (!r.deliveryDate) return false;
-        const d = new Date(r.deliveryDate);
-        if (isNaN(d.getTime())) return false;
-        return getISOWeekString(d) === selectedWeek;
-      });
+      scopedRows = rows.filter(r => r.week === selectedWeek);
     }
 
     const pkgMap: Record<string, number> = {};
@@ -148,11 +137,7 @@ export function useEmployeeSummaries(rows: CDFRow[], scorecardRows: Array<{ tran
       const weeks = new Set(
         scopedRows
           .filter(r => r.deliveryAssociate === emp.transporterId && r.defectCategories.length > 0)
-          .map(r => {
-            if (!r.deliveryDate) return 'Unknown';
-            const d = new Date(r.deliveryDate);
-            return isNaN(d.getTime()) ? 'Unknown' : getISOWeekString(d);
-          })
+          .map(r => r.week)
       );
       emp.weeksWithDefects = weeks.size;
 
@@ -170,14 +155,8 @@ export function useCategoryTotals(rows: CDFRow[], selectedWeek: string): Record<
   return useMemo(() => {
     let scopedRows = rows;
     if (selectedWeek && selectedWeek !== '__all__') {
-      scopedRows = rows.filter(r => {
-        if (!r.deliveryDate) return false;
-        const d = new Date(r.deliveryDate);
-        if (isNaN(d.getTime())) return false;
-        return getISOWeekString(d) === selectedWeek;
-      });
+      scopedRows = rows.filter(r => r.week === selectedWeek);
     }
-
     const totals: Record<string, number> = {};
     CDF_DEFECT_COLUMNS.forEach(c => { totals[c] = 0; });
     scopedRows.forEach(r => {
@@ -213,16 +192,6 @@ export function useDateRange(rows: CDFRow[]): { min: string; max: string } {
     });
     return { min, max };
   }, [rows]);
-}
-
-function getISOWeekString(d: Date): string {
-  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = dt.getUTCDay() || 7;
-  dt.setUTCDate(dt.getUTCDate() + 4 - dayNum);
-  const year = dt.getUTCFullYear();
-  const weekStart = new Date(Date.UTC(year, 0, 4));
-  const weekNo = String(Math.ceil(((dt.getTime() - weekStart.getTime()) / 86400000 + 1) / 7)).padStart(2, '0');
-  return `${year}-W${weekNo}`;
 }
 
 export const CDF_DEFECT_COLORS: Record<string, string> = {

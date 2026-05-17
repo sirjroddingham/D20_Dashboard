@@ -151,7 +151,7 @@ export const useDataSourceStore = create<DataSourceState>((set, get) => ({
     }
 
     const merged = [...existing, ...toAdd];
-    const weeks = [...new Set(merged.map((r) => dateToISOWeek(r.deliveryDate)))].sort();
+    const weeks = [...new Set(merged.map((r) => r.week))].sort();
 
     set({
       cdfRows: merged,

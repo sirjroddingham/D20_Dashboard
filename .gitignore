@@ -9,6 +9,13 @@ lerna-debug.log*
 
 node_modules
 dist
+
+# Test screenshots
+*-*.png
+cdf-*.png
+
+# Lock files
+snaps/.~lock.*
 dist-ssr
 *.local
 

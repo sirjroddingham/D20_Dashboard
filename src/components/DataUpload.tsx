@@ -149,7 +149,9 @@ export default function DataUpload({ compact = false }: DataUploadProps) {
             });
             break;
           case 'cdf':
-            parsedRows = parseCDF(csvText);
+            const cdfWeekMatch = file.name.match(/(\d{4}-W\d{2})/i);
+            const cdfWeek = cdfWeekMatch ? cdfWeekMatch[1].toUpperCase() : 'Unknown';
+            parsedRows = parseCDF(csvText, cdfWeek);
             mergeCdf(parsedRows as ReturnType<typeof parseCDF>);
             addUploadSummary({
               type: 'cdf',

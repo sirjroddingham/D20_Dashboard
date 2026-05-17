@@ -10,7 +10,7 @@ function findCol(headers: string[], exact: string): number {
   return headers.findIndex((h) => h.trim() === exact);
 }
 
-export function parseCDF(csvText: string): CDFRow[] {
+export function parseCDF(csvText: string, week: string = 'Unknown'): CDFRow[] {
   const result = Papa.parse<Record<string, string>>(csvText, {
     header: true,
     skipEmptyLines: true,
@@ -58,6 +58,7 @@ export function parseCDF(csvText: string): CDFRow[] {
 
     return {
       _id: `${da}::${trackingId}::${idx}`,
+      week,
       deliveryAssociate: da,
       deliveryAssociateName: daName,
       trackingId,

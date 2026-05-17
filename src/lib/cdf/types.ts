@@ -1,5 +1,6 @@
 export interface CDFRow {
   _id: string;
+  week: string;
   deliveryAssociate: string;
   deliveryAssociateName: string;
   trackingId: string;

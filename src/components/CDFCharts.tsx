@@ -105,7 +105,8 @@ export function CDFCategoryChart({ categoryTotals }: CDFCategoryChartProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className="rounded-lg section-card backdrop-blur-sm p-4 flex flex-col flex-1 min-h-0"
+      className="rounded-lg section-card backdrop-blur-sm p-4 flex flex-col"
+      style={{ minHeight: 320 }}
     >
       <div className="shrink-0 mb-2 flex items-center justify-between">
         <h3 className="text-sm font-medium text-text-subtle">Defect Distribution by Category</h3>
