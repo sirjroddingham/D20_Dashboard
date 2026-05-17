@@ -39,9 +39,6 @@ export default function RTSPieChart() {
         borderRadius: 6,
         borderWidth: 0,
         borderColor: 'transparent',
-        shadowBlur: 12,
-        shadowColor: 'rgba(0, 0, 0, 0.45)',
-        shadowOffsetY: 6,
       },
       emphasis: {
         itemStyle: {

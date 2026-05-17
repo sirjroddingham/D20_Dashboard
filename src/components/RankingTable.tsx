@@ -38,13 +38,7 @@ const scoreBgClass = (pct: number) => {
   return 'bg-score-critical/20';
 };
 
-const titleColorMap: Record<TitleColorType, string> = {
-  overall: 'bg-title-overall text-white',
-  safety: 'bg-title-safety text-white',
-  quality: 'bg-title-quality text-white',
-  bottom: 'bg-title-bottom text-white',
-  muted: 'bg-title-muted text-white',
-};
+const titleStyle = 'bg-surface-2 text-text-subtle';
 
 const standingStyles: Record<string, string> = {
   Platinum: 'bg-standing-platinum-bg text-standing-platinum-text',
@@ -57,16 +51,15 @@ export default function RankingTable({
   title,
   data,
   maxScore,
-  titleColor,
   scoreLabel,
   showStanding = true,
 }: RankingTableProps) {
   if (data.length === 0) return null;
 
   return (
-    <div className="rounded-lg section-card overflow-hidden">
+    <div className="rounded-lg section-card backdrop-blur-sm p-3 overflow-hidden">
       <div
-        className={`px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white ${titleColorMap[titleColor]}`}
+        className={`px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider ${titleStyle}`}
       >
         {title}
       </div>
@@ -135,8 +128,8 @@ export function NoSafetyDataTable({ rows, qualityScores }: NoSafetyDataProps) {
   const sorted = [...rows].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="rounded-lg section-card overflow-hidden">
-      <div className="px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white bg-title-muted">
+    <div className="rounded-lg section-card backdrop-blur-sm p-3 overflow-hidden">
+      <div className={`px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider ${titleStyle}`}>
         Employees Without Safety Data
       </div>
       <div className="px-3 sm:px-4 py-1.5 text-[11px] text-text-subtle italic">
@@ -196,15 +189,14 @@ export function TrailingTable({
   title,
   data,
   maxScore,
-  titleColor,
   scoreLabel,
 }: TrailingTableProps) {
   if (data.length === 0) return null;
 
   return (
-    <div className="rounded-lg section-card overflow-hidden">
+    <div className="rounded-lg section-card backdrop-blur-sm p-3 overflow-hidden">
       <div
-        className={`px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white ${titleColorMap[titleColor]}`}
+        className={`px-3 sm:px-4 py-2 text-xs font-semibold uppercase tracking-wider ${titleStyle}`}
       >
         {title}
       </div>

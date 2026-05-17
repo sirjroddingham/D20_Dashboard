@@ -241,7 +241,7 @@ export default function DAPerformance() {
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4">
-      <div className="flex items-center justify-between rounded-lg bg-surface-1 p-4 border border-surface-3">
+      <div className="flex items-center justify-between rounded-lg bg-surface-1 p-4 border border-surface-3 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-medium text-text-heading">DA Performance</h1>
           {fileName && (
@@ -316,7 +316,7 @@ export default function DAPerformance() {
             transition={{ duration: 0.4 }}
             className="space-y-4"
           >
-            <div className="flex items-center gap-4 rounded-lg section-card p-4">
+            <div className="flex items-center gap-4 rounded-lg section-card backdrop-blur-sm p-4">
               <label className="text-sm font-medium text-text-subtle">Week:</label>
               <select
                 value={selectedWeek}
@@ -333,7 +333,7 @@ export default function DAPerformance() {
             </div>
 
             {/* === OVERALL === */}
-            <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
+            <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5">
               <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Overall Performance Rankings</h2>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
@@ -363,7 +363,7 @@ export default function DAPerformance() {
             </div>
 
             {/* === SAFETY === */}
-            <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
+            <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5">
               <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Safety Group Rankings</h2>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
@@ -399,7 +399,7 @@ export default function DAPerformance() {
             </div>
 
             {/* === QUALITY === */}
-            <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5">
+            <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5">
               <h2 className="mb-3 sm:mb-4 text-text-subtle text-sm font-medium">Quality Group Rankings</h2>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch">
                 <div className="space-y-4">
@@ -433,19 +433,24 @@ export default function DAPerformance() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
+                className="space-y-4 pt-4"
               >
-                <div className="rounded-lg section-card p-3 sm:p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-6 w-px bg-surface-3" />
-                    <h2 className="text-text-subtle text-sm font-medium">Trailing Performance Averages</h2>
-                    <span className="pill pill-default">
-                      {loadedWeeks.length} week(s) · Scores averaged · Packages totaled
-                    </span>
+                <div className="flex items-center">
+                  <div className="flex-1 border-t border-surface-3" />
+                  <div className="flex items-center shrink-0 mx-3">
+                    <div className="h-px flex-1 bg-text-heading" />
+                    <h2 className="text-text-heading text-sm font-semibold uppercase tracking-wider px-3">Trailing Performance Averages</h2>
+                    <div className="h-px flex-1 bg-text-heading" />
                   </div>
+                  <div className="flex-1 border-t border-surface-3" />
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  <span className="pill pill-default">
+                    {loadedWeeks.length} week(s) · Scores averaged · Packages totaled
+                  </span>
                 </div>
 
-                <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
+                <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5 space-y-4">
                   <h3 className="text-text-subtle text-sm font-medium">Extended Overall Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
@@ -465,7 +470,7 @@ export default function DAPerformance() {
                   </div>
                 </div>
 
-                <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
+                <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5 space-y-4">
                   <h3 className="text-text-subtle text-sm font-medium">Extended Safety Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable
@@ -485,7 +490,7 @@ export default function DAPerformance() {
                   </div>
                 </div>
 
-                <div className="rounded-lg section-card p-3 sm:p-4 lg:p-5 space-y-4">
+                <div className="rounded-lg section-card backdrop-blur-sm p-3 sm:p-4 lg:p-5 space-y-4">
                   <h3 className="text-text-subtle text-sm font-medium">Extended Quality Rankings (Top / Bottom 30)</h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <TrailingTable

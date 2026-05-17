@@ -37,13 +37,6 @@ function createBuckets(scores: number[], maxScore: number) {
 export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistributionChartProps) {
   const { colors, theme: chartTheme } = useChartTheme();
 
-  const shadowBlur = 12;
-  const shadowOffsetY = 6;
-  const shadowColor = 'rgba(0, 0, 0, 0.45)';
-  const shadowOffsetYHover = 14;
-  const shadowBlurHover = 22;
-  const shadowColorHover = 'rgba(0, 0, 0, 0.6)';
-
   const buckets = useMemo(() => createBuckets(scores, maxScore), [scores, maxScore]);
 
   const pieData = useMemo(
@@ -77,15 +70,12 @@ export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistrib
         borderRadius: 6,
         borderWidth: 0,
         borderColor: 'transparent',
-        shadowBlur,
-        shadowColor,
-        shadowOffsetY,
       },
       emphasis: {
         itemStyle: {
-          shadowBlur: shadowBlurHover,
-          shadowColor: shadowColorHover,
-          shadowOffsetY: shadowOffsetYHover,
+          shadowBlur: 22,
+          shadowColor: 'rgba(0, 0, 0, 0.6)',
+          shadowOffsetY: 14,
         },
       },
       label: {
@@ -114,7 +104,7 @@ export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistrib
     }],
     animationDuration: 800,
     animationEasing: 'cubicOut',
-  }), [pieData, total, colors, colorMap, title, shadowBlur, shadowColor, shadowOffsetY, shadowBlurHover, shadowColorHover, shadowOffsetYHover]);
+  }), [pieData, total, colors, colorMap, title]);
 
   const chartStyle = useMemo(() => ({ height: '100%', width: '100%' }), []);
   const chartOpts = useMemo(() => ({ renderer: 'canvas' as const }), []);
@@ -124,7 +114,7 @@ export function ScoreDistributionChart({ title, scores, maxScore }: ScoreDistrib
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className="rounded-lg section-card p-2 sm:p-2 flex flex-col flex-1 min-h-0"
+      className="rounded-lg section-card backdrop-blur-sm p-4 flex flex-col flex-1 min-h-0"
     >
       <div className="shrink-0 mb-2 flex items-center justify-between">
         <h3 className="text-sm font-medium text-text-subtle">{title}</h3>
