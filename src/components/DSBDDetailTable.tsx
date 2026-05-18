@@ -57,14 +57,19 @@ export default function DSBDetailTable({ rows }: DSBDetailTableProps) {
     }
 
     const sorted = [...filtered].sort((a, b) => {
-      const aVal = a[sortConfig.key as keyof DSBRow] || '';
-      const bVal = b[sortConfig.key as keyof DSBRow] || '';
       if (sortConfig.key === 'defectCategories') {
         const aStr = a.defectCategories.map(c => DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c).join(', ');
         const bStr = b.defectCategories.map(c => DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c).join(', ');
         const comparison = aStr.localeCompare(bStr);
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       }
+      if (sortConfig.key === 'impactsDsb') {
+        const aBool = a.impactsDsb ? 1 : 0;
+        const bBool = b.impactsDsb ? 1 : 0;
+        return sortConfig.direction === 'asc' ? aBool - bBool : bBool - aBool;
+      }
+      const aVal = a[sortConfig.key as keyof DSBRow] ?? '';
+      const bVal = b[sortConfig.key as keyof DSBRow] ?? '';
       const comparison = String(aVal).localeCompare(String(bVal));
       return sortConfig.direction === 'asc' ? comparison : -comparison;
     });

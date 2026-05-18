@@ -38,7 +38,7 @@ export default function DetailTable() {
   }, []);
 
   const sortedData = useMemo(() => {
-    const searchTerm = columnFilter._global || '';
+    const searchTerm = (columnFilter._global || '').toLowerCase();
     let rows = filteredData;
     if (searchTerm) {
       rows = rows.filter(row =>
@@ -61,8 +61,7 @@ export default function DetailTable() {
   const paginatedData = sortedData.slice(safePage * ROWS_PER_PAGE, (safePage + 1) * ROWS_PER_PAGE);
 
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value.toLowerCase();
-    setColumnFilter(prev => ({ ...prev, _global: searchTerm }));
+    setColumnFilter(prev => ({ ...prev, _global: e.target.value }));
     setPage(0);
   }, []);
 

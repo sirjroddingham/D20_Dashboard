@@ -123,63 +123,71 @@ export default function DataUpload({ compact = false }: DataUploadProps) {
         const csvText = await readFullCsv(file);
         let parsedRows: unknown[] = [];
 
+        let mergeResult: { merged: number; duplicates: number } | undefined;
         switch (type) {
-          case 'rts':
-            parsedRows = parseRTSCSV(csvText);
-            mergeRts(parsedRows as ReturnType<typeof parseRTSCSV>);
+          case 'rts': {
+            const rtsWeekMatch = file.name.match(/(\d{4}-W\d{2})/i);
+            const rtsWeek = rtsWeekMatch ? rtsWeekMatch[1].toUpperCase() : 'Unknown';
+            parsedRows = parseRTSCSV(csvText, file.name, rtsWeek);
+            mergeResult = mergeRts(parsedRows as ReturnType<typeof parseRTSCSV>);
             addUploadSummary({
               type: 'rts',
               fileName: file.name,
               totalRows: parsedRows.length,
-              mergedRows: parsedRows.length,
-              duplicateRows: 0,
+              mergedRows: mergeResult.merged,
+              duplicateRows: mergeResult.duplicates,
               timestamp: Date.now(),
             });
             break;
+          }
           case 'scorecard':
             parsedRows = parseScorecardCSV(csvText);
-            mergeScorecard(parsedRows as ReturnType<typeof parseScorecardCSV>);
+            mergeResult = mergeScorecard(parsedRows as ReturnType<typeof parseScorecardCSV>);
             addUploadSummary({
               type: 'scorecard',
               fileName: file.name,
               totalRows: parsedRows.length,
-              mergedRows: parsedRows.length,
-              duplicateRows: 0,
+              mergedRows: mergeResult.merged,
+              duplicateRows: mergeResult.duplicates,
               timestamp: Date.now(),
             });
             break;
-          case 'cdf':
+          case 'cdf': {
             const cdfWeekMatch = file.name.match(/(\d{4}-W\d{2})/i);
             const cdfWeek = cdfWeekMatch ? cdfWeekMatch[1].toUpperCase() : 'Unknown';
             parsedRows = parseCDF(csvText, cdfWeek);
-            mergeCdf(parsedRows as ReturnType<typeof parseCDF>);
+            mergeResult = mergeCdf(parsedRows as ReturnType<typeof parseCDF>);
             addUploadSummary({
               type: 'cdf',
               fileName: file.name,
               totalRows: parsedRows.length,
-              mergedRows: parsedRows.length,
-              duplicateRows: 0,
+              mergedRows: mergeResult.merged,
+              duplicateRows: mergeResult.duplicates,
               timestamp: Date.now(),
             });
             break;
-          case 'dsb':
-            parsedRows = parseDSB(csvText);
-            mergeDsb(parsedRows as ReturnType<typeof parseDSB>);
+          }
+          case 'dsb': {
+            const dsbWeekMatch = file.name.match(/(\d{4}-W\d{2})/i);
+            const dsbWeek = dsbWeekMatch ? dsbWeekMatch[1].toUpperCase() : 'Unknown';
+            parsedRows = parseDSB(csvText, dsbWeek);
+            mergeResult = mergeDsb(parsedRows as ReturnType<typeof parseDSB>);
             addUploadSummary({
               type: 'dsb',
               fileName: file.name,
               totalRows: parsedRows.length,
-              mergedRows: parsedRows.length,
-              duplicateRows: 0,
+              mergedRows: mergeResult.merged,
+              duplicateRows: mergeResult.duplicates,
               timestamp: Date.now(),
             });
             break;
+          }
         }
 
         results.push({
           fileName: file.name,
           type,
-          rowsMerged: parsedRows.length,
+          rowsMerged: mergeResult?.merged ?? parsedRows.length,
           totalRows: parsedRows.length,
           error: null,
         });

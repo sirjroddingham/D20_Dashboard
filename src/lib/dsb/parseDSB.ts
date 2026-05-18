@@ -15,7 +15,7 @@ function findCol(headers: string[], exact: string): number {
   return headers.findIndex((h) => h.trim() === exact);
 }
 
-export function parseDSB(csvText: string): DSBRow[] {
+export function parseDSB(csvText: string, week: string = 'Unknown'): DSBRow[] {
   const result = Papa.parse<Record<string, string>>(csvText, {
     header: true,
     skipEmptyLines: true,
@@ -76,6 +76,7 @@ export function parseDSB(csvText: string): DSBRow[] {
 
     return {
       _id: `${getVal(daIdx)}::${getVal(trackingIdx)}::${idx}`,
+      week,
       deliveryAssociateName: getVal(daNameIdx),
       deliveryAssociate: getVal(daIdx),
       trackingId: getVal(trackingIdx),

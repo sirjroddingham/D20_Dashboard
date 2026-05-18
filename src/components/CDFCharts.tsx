@@ -11,7 +11,7 @@ interface CDFCategoryChartProps {
 }
 
 export function CDFCategoryChart({ categoryTotals }: CDFCategoryChartProps) {
-  const { colors } = useChartTheme();
+  const { colors, theme: chartTheme } = useChartTheme();
 
   const pieData = useMemo(
     () =>
@@ -121,6 +121,7 @@ export function CDFCategoryChart({ categoryTotals }: CDFCategoryChartProps) {
             option={option}
             style={chartStyle}
             opts={chartOpts}
+            theme={chartTheme}
           />
         </div>
       </div>
@@ -258,12 +259,14 @@ export function CDFDefectsByDayChart({ rows }: CDFDefectsByDayChartProps) {
       const dateStr = row.deliveryDate.slice(0, 10);
       const existing = dateCounts.get(dateStr) || { counts: {}, total: 0 };
 
+      let defectCount = 0;
       for (const col of CDF_DEFECT_COLUMNS) {
         if (row[col as keyof CDFRow] === true) {
           existing.counts[col] = (existing.counts[col] || 0) + 1;
-          existing.total += 1;
+          defectCount++;
         }
       }
+      existing.total += defectCount;
 
       dateCounts.set(dateStr, existing);
     }

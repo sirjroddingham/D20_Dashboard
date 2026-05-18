@@ -1,6 +1,5 @@
 import type { RTSDataRow } from './rts/types';
 import type { ScorecardRow } from './scorecard/types';
-import { toISOWeek } from './rts/helpers';
 
 export interface PieDataItem {
   name: string;
@@ -98,8 +97,8 @@ export function getEmployeeSummary(data: RTSDataRow[], totalPackages: number): E
 export function getTotalPackagesForDateRange(filteredData: RTSDataRow[], scorecardRows: ScorecardRow[]): number {
   const weeks = new Set<string>();
   for (const row of filteredData) {
-    if (row.normalizedDate) {
-      weeks.add(toISOWeek(row.normalizedDate));
+    if (row.week && row.week !== 'Unknown') {
+      weeks.add(row.week);
     }
   }
   if (weeks.size === 0) return 0;

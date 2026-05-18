@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Search, X, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRTSStore } from '../store/useRTSStore';
+import { useDataSourceStore } from '../store/useDataSourceStore';
 import { getUniqueEmployees, getUniqueRTSCodes } from '../lib/utils';
 
 export default function FilterBar() {
@@ -9,11 +10,12 @@ export default function FilterBar() {
   const rawData = useRTSStore(s => s.rawData);
   const setFilters = useRTSStore(s => s.setFilters);
   const resetFilters = useRTSStore(s => s.resetFilters);
+  const loadedWeeks = useDataSourceStore(s => s.rtsLoadedWeeks);
 
   const employees = useMemo(() => getUniqueEmployees(rawData), [rawData]);
   const rtsCodes = useMemo(() => getUniqueRTSCodes(rawData), [rawData]);
 
-  const hasFilters = filters.employee || filters.search || filters.dateRange || filters.rtsCodes.length > 0 || filters.impactDcr;
+  const hasFilters = filters.week || filters.employee || filters.search || filters.dateRange || filters.rtsCodes.length > 0 || filters.impactDcr;
 
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -106,7 +108,18 @@ export default function FilterBar() {
             className="w-full rounded-md border border-surface-3 bg-surface-0 py-2 pl-9 pr-4 text-sm text-text-heading placeholder:text-text-faint transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
- 
+
+        <select
+          value={filters.week}
+          onChange={(e) => setFilters({ week: e.target.value })}
+          className="rounded-md border border-surface-3 bg-surface-0 px-3 py-2 text-sm text-text-heading transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+          <option value="" style={{ background: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))' }}>All Weeks</option>
+          {loadedWeeks.map(week => (
+            <option key={week} value={week} style={{ background: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))' }}>{week}</option>
+          ))}
+        </select>
+
         <select
           value={filters.employee}
           onChange={(e) => setFilters({ employee: e.target.value })}

@@ -28,7 +28,18 @@ function getTopN(items: RankedItem[], n: number, perfectThreshold: number) {
 
 function getBottomN(items: RankedItem[], n: number) {
   const sorted = [...items].sort((a, b) => b.score - a.score);
-  return sorted.slice(-n).reverse();
+  if (sorted.length <= n) return sorted.reverse();
+
+  const sliced = sorted.slice(-n);
+  const cutoffScore = sliced[0].score;
+  const aboveCutoff = sorted[sorted.length - n - 1];
+
+  if (aboveCutoff && Math.abs(aboveCutoff.score - cutoffScore) < 0.001) {
+    const result = sorted.filter(r => r.score <= cutoffScore + 0.001).reverse();
+    return result;
+  }
+
+  return sliced.reverse();
 }
 
 export default function DAPerformance() {
@@ -40,15 +51,18 @@ export default function DAPerformance() {
   const [selectedWeek, setSelectedWeek] = useState<string>(mostRecentWeek);
 
   useEffect(() => {
-    if (mostRecentWeek && mostRecentWeek !== selectedWeek) {
+    if (mostRecentWeek && !selectedWeek) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync selectedWeek to mostRecentWeek on data load
       setSelectedWeek(mostRecentWeek);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only sync when mostRecentWeek changes
   }, [mostRecentWeek]);
 
   const weekRows = useMemo(() => {
-    if (!selectedWeek) return rows;
-    return rows.filter(r => r.week === selectedWeek);
-  }, [rows, selectedWeek]);
+    const activeWeek = selectedWeek || mostRecentWeek;
+    if (!activeWeek) return rows;
+    return rows.filter(r => r.week === activeWeek);
+  }, [rows, selectedWeek, mostRecentWeek]);
 
   const trailingAverages = useDAPerformanceStore(s => s.trailingAverages);
 
@@ -146,7 +160,7 @@ export default function DAPerformance() {
 
   const trailingSafetyData = useMemo(
     () =>
-      trailingAverages.filter(t => t.avgSafetyScore > 0 || t.weekCount > 0).sort((a, b) => b.avgSafetyScore - a.avgSafetyScore),
+      trailingAverages.filter(t => t.avgSafetyScore > 0).sort((a, b) => b.avgSafetyScore - a.avgSafetyScore),
     [trailingAverages],
   );
 

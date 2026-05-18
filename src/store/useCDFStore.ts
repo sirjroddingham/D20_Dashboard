@@ -172,9 +172,13 @@ export function useCategoryTotals(rows: CDFRow[]): Record<string, number> {
 export function useDefectFreeEmployees(
   rows: CDFRow[],
   scorecardRows: Array<{ transporterId: string; name: string; packagesDelivered: number; week: string }>,
+  selectedWeek: string,
 ): EmployeeSummary[] {
   return useMemo(() => {
-    const idsWithDefects = new Set(rows.map(r => r.deliveryAssociate));
+    const scopedRows = selectedWeek && selectedWeek !== '__all__'
+      ? rows.filter(r => r.week === selectedWeek)
+      : rows;
+    const idsWithDefects = new Set(scopedRows.map(r => r.deliveryAssociate));
 
     const pkgMap: Record<string, number> = {};
     const nameMap: Record<string, string> = {};
@@ -210,7 +214,7 @@ export function useDefectFreeEmployees(
 
     results.sort((a, b) => b.packages - a.packages);
     return results;
-  }, [rows, scorecardRows]);
+  }, [rows, scorecardRows, selectedWeek]);
 }
 
 export function useUniqueEmployees(rows: CDFRow[]): string[] {

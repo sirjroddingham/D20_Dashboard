@@ -20,7 +20,7 @@ interface DSBCategoryChartProps {
 }
 
 export function DSBCategoryChart({ categoryTotals }: DSBCategoryChartProps) {
-  const { colors } = useChartTheme();
+  const { colors, theme: chartTheme } = useChartTheme();
 
   const pieData = useMemo(
     () =>
@@ -130,7 +130,7 @@ export function DSBCategoryChart({ categoryTotals }: DSBCategoryChartProps) {
             option={option}
             style={chartStyle}
             opts={chartOpts}
-            notMerge={true}
+            theme={chartTheme}
           />
         </div>
       </div>
@@ -156,11 +156,10 @@ export function DSBDefectsByDayChart({ rows }: DSBDefectsByDayChartProps) {
       if (!dateStr) continue;
       const existing = dateCounts.get(dateStr) || { counts: {}, total: 0 };
 
-      // Count each row once per category in defectCategories (includes 'other')
       for (const cat of row.defectCategories) {
         existing.counts[cat] = (existing.counts[cat] || 0) + 1;
-        existing.total += 1;
       }
+      existing.total += row.defectCategories.length;
 
       dateCounts.set(dateStr, existing);
     }

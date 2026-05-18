@@ -100,14 +100,32 @@ export const useDAPerformanceStore = create<DAPerformanceState>((set, get) => {
         mostRecentWeek: '',
         fileName: '',
         _trailingAverages: [],
-        trailingAverages: [],
+    trailingAverages: trailingAvgs,
       });
     },
   };
 });
 
-// Sync central store changes back to DA store
+// Sync central store changes back to DA store (only when scorecard data changes)
+let prevScorecardRows: ScorecardRow[] = [];
+let prevScorecardLoadedWeeks: string[] = [];
+let prevScorecardMostRecentWeek = '';
+let prevScorecardLastUpload = '';
+
 useDataSourceStore.subscribe((state) => {
+  if (
+    state.scorecardRows === prevScorecardRows &&
+    state.scorecardLoadedWeeks === prevScorecardLoadedWeeks &&
+    state.scorecardMostRecentWeek === prevScorecardMostRecentWeek &&
+    state.scorecardLastUpload === prevScorecardLastUpload
+  ) {
+    return;
+  }
+  prevScorecardRows = state.scorecardRows;
+  prevScorecardLoadedWeeks = state.scorecardLoadedWeeks;
+  prevScorecardMostRecentWeek = state.scorecardMostRecentWeek;
+  prevScorecardLastUpload = state.scorecardLastUpload;
+
   const daStore = useDAPerformanceStore.getState();
   const { weeks, mostRecent, trailingAvgs } = recomputeDerived(state.scorecardRows);
   useDAPerformanceStore.setState({

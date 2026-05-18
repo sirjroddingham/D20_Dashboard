@@ -9,7 +9,6 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useLayoutStore } from '../store/useLayoutStore';
-import { useThemeStore } from '../store/useThemeStore';
 
 interface NavItemProps {
   to: string;
@@ -36,7 +35,6 @@ function NavItem({ to, label, icon, isActive }: NavItemProps) {
 
 export default function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useLayoutStore();
-  useThemeStore();
   const location = useLocation();
 
   const navItems = [

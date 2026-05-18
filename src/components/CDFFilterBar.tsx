@@ -105,7 +105,8 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
         <div className="flex items-center gap-2">
           <input
             type="date"
-            value={filters.dateStart || dateRange.min}
+            value={filters.dateStart}
+            placeholder={dateRange.min}
             min={dateRange.min}
             max={dateRange.max}
             onChange={(e) => onFilterChange({ dateStart: e.target.value })}
@@ -114,7 +115,8 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
           <span className="text-text-subtle">to</span>
           <input
             type="date"
-            value={filters.dateEnd || dateRange.max}
+            value={filters.dateEnd}
+            placeholder={dateRange.max}
             min={dateRange.min}
             max={dateRange.max}
             onChange={(e) => onFilterChange({ dateEnd: e.target.value })}

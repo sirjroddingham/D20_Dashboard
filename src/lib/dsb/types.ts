@@ -1,5 +1,6 @@
 export interface DSBRow {
   _id: string;
+  week: string;
   deliveryAssociateName: string;
   deliveryAssociate: string;
   trackingId: string;

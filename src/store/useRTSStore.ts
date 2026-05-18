@@ -19,6 +19,7 @@ interface RTSStoreState {
 
 function applyFilters(rawData: RTSDataRow[], filters: RTSFilters): RTSDataRow[] {
   return rawData.filter(row => {
+    if (filters.week && row.week !== filters.week) return false;
     if (filters.dateRange) {
       if (!row.normalizedDate) return false;
       const [start, end] = filters.dateRange;
@@ -44,6 +45,7 @@ function applyFilters(rawData: RTSDataRow[], filters: RTSFilters): RTSDataRow[] 
 }
 
 const defaultFilters: RTSFilters = {
+  week: '',
   dateRange: null,
   employee: '',
   search: '',
@@ -115,8 +117,23 @@ export const useRTSStore = create<RTSStoreState>((set, get) => {
   };
 });
 
-// Sync central store changes back to RTS store
+// Sync central store changes back to RTS store (only when RTS data changes)
+let prevRtsRows: RTSDataRow[] = [];
+let prevRtsLoadedWeeks: string[] = [];
+let prevRtsLastUpload = '';
+
 useDataSourceStore.subscribe((state) => {
+  if (
+    state.rtsRows === prevRtsRows &&
+    state.rtsLoadedWeeks === prevRtsLoadedWeeks &&
+    state.rtsLastUpload === prevRtsLastUpload
+  ) {
+    return;
+  }
+  prevRtsRows = state.rtsRows;
+  prevRtsLoadedWeeks = state.rtsLoadedWeeks;
+  prevRtsLastUpload = state.rtsLastUpload;
+
   const rtsStore = useRTSStore.getState();
   const filtered = applyFilters(state.rtsRows, rtsStore.filters);
   useRTSStore.setState({

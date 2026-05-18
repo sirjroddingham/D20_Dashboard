@@ -10,9 +10,11 @@ export interface RTSDataRow {
   plannedDeliveryDate: string;
   serviceArea: string;
   normalizedDate: Date | null;
+  week: string;
 }
 
 export interface RTSFilters {
+  week: string;
   dateRange: [Date | null, Date | null] | null;
   employee: string;
   search: string;

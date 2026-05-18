@@ -14,7 +14,6 @@ import {
 import type { CDFRow } from '../lib/cdf/types';
 import type { DSBRow } from '../lib/dsb/types';
 import { DSB_DEFECT_COLUMNS, DSB_DEFECT_LABELS } from '../lib/dsb/types';
-import { dateToISOWeek } from '../lib/rts/helpers';
 import CDFFilterBar from '../components/CDFFilterBar';
 import CDFDetailTable from '../components/CDFDetailTable';
 import { BottomPerformersTable, DefectFreeTable } from '../components/CDFRankingTables';
@@ -55,10 +54,7 @@ function useFilteredDSBRows(rows: DSBRow[], selectedWeek: string, filters: DSBFi
     let filtered = rows;
 
     if (selectedWeek && selectedWeek !== '__all__') {
-      filtered = filtered.filter(r => {
-        const week = dateToISOWeek(r.concessionDate || r.deliveryDate);
-        return week === selectedWeek;
-      });
+      filtered = filtered.filter(r => r.week === selectedWeek);
     }
 
     if (filters.employee) {
@@ -235,7 +231,7 @@ export default function CDFSB() {
 
   const filteredRows = useFilteredRows(enrichedCdfRows, selectedWeek, filters);
   const employeeSummaries = useEmployeeSummaries(filteredRows, scorecardRows, selectedWeek);
-  const defectFreeSummaries = useDefectFreeEmployees(enrichedCdfRows, scorecardRows);
+  const defectFreeSummaries = useDefectFreeEmployees(enrichedCdfRows, scorecardRows, selectedWeek);
   const categoryTotals = useCategoryTotals(filteredRows);
   const dateRange = useDateRange(enrichedCdfRows);
 
@@ -249,10 +245,7 @@ export default function CDFSB() {
   // inputs stay anchored to the visible week rather than the full dataset.
   const dsbWeekRows = useMemo(() => {
     if (!dsbSelectedWeek || dsbSelectedWeek === '__all__') return dsbRows;
-    return dsbRows.filter(r => {
-      const week = dateToISOWeek(r.concessionDate || r.deliveryDate);
-      return week === dsbSelectedWeek;
-    });
+    return dsbRows.filter(r => r.week === dsbSelectedWeek);
   }, [dsbRows, dsbSelectedWeek]);
   const dsbDateRange = useDSBDateRange(dsbWeekRows);
 
@@ -347,7 +340,7 @@ export default function CDFSB() {
                 {cdfLoadedWeeks.map(week => (
                   <option key={week} value={week}>{week}</option>
                 ))}
-                {cdfLoadedWeeks.length > 1 && (
+                {cdfLoadedWeeks.length >= 1 && (
                   <option value={allWeeksOption}>All Weeks ({cdfLoadedWeeks.length})</option>
                 )}
               </select>
@@ -396,7 +389,7 @@ export default function CDFSB() {
                     {dsbLoadedWeeks.map(week => (
                       <option key={week} value={week}>{week}</option>
                     ))}
-                    {dsbLoadedWeeks.length > 1 && (
+                    {dsbLoadedWeeks.length >= 1 && (
                       <option value={allWeeksOption}>All Weeks ({dsbLoadedWeeks.length})</option>
                     )}
                   </select>

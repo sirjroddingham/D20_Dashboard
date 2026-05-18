@@ -12,6 +12,8 @@ export default function StackedBarChart() {
   const setFilters = useRTSStore(s => s.setFilters);
   const chartRef = useRef<ReactECharts>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const hoveredIdxRef = useRef<number | null>(null);
+  useEffect(() => { hoveredIdxRef.current = hoveredIdx; }, [hoveredIdx]);
 
   const barData = useMemo(() => getBarChartData(filteredData), [filteredData]);
   const dates = useMemo(() => barData.map(d => d.date), [barData]);
@@ -62,7 +64,7 @@ export default function StackedBarChart() {
       chart.off('mousemove', onMove);
       chart.off('globalout', onOut);
     };
-  }, [codes]);
+  }, []);
 
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -102,7 +104,7 @@ export default function StackedBarChart() {
         const date = (params[0]?.axisValue as string) || '';
         let html = `<div style="font-weight:600;margin-bottom:6px;color:${colors.tooltip.text};">${date}</div>`;
         for (const p of params) {
-          const isHov = p.seriesIndex === hoveredIdx;
+          const isHov = p.seriesIndex === hoveredIdxRef.current;
           const c = isHov ? (p.color || '') : colors.tooltip.muted;
           const fw = isHov ? '600' : '400';
           html += `<div style="display:flex;justify-content:space-between;gap:16px;color:${c};font-weight:${fw};padding:2px 0;">
@@ -152,7 +154,7 @@ export default function StackedBarChart() {
       { type: 'inside' as const, xAxisIndex: [0], start: 0, end: 100 },
     ],
     series,
-  }), [barData, dates, series, colors, hoveredIdx]);
+  }), [barData, dates, series, colors]);
 
   const chartStyle = useMemo(() => ({ height: 320, width: '100%' }), []);
   const chartOpts = useMemo(() => ({ renderer: 'canvas' as const }), []);

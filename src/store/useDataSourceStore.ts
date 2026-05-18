@@ -3,25 +3,22 @@ import type { RTSDataRow } from '../lib/rts/types';
 import type { ScorecardRow } from '../lib/scorecard/types';
 import type { CDFRow } from '../lib/cdf/types';
 import type { DSBRow } from '../lib/dsb/types';
-import { toISOWeek, dateToISOWeek } from '../lib/rts/helpers';
-
 function rtsMergeKey(row: RTSDataRow): string {
-  const week = row.normalizedDate ? toISOWeek(row.normalizedDate) : 'Unknown';
-  return `${week}::${row.transporterId}`;
+  return row.transporterId ? `${row.week}::${row.transporterId}` : `${row.week}::${row._id}`;
 }
 
 function scorecardMergeKey(row: ScorecardRow): string {
-  return `${row.week}::${row.transporterId}`;
+  return row.transporterId ? `${row.week}::${row.transporterId}` : `${row.week}::${row._id}`;
 }
 
 function cdfMergeKey(row: CDFRow): string {
-  const week = dateToISOWeek(row.deliveryDate);
-  return `${week}::${row.deliveryAssociate}`;
+  return row.deliveryAssociate && row.trackingId
+    ? `${row.week}::${row.deliveryAssociate}::${row.trackingId}`
+    : `${row.week}::${row._id}`;
 }
 
 function dsbMergeKey(row: DSBRow): string {
-  const week = dateToISOWeek(row.concessionDate || row.deliveryDate);
-  return `${week}::${row.trackingId}`;
+  return row.trackingId ? `${row.week}::${row.trackingId}` : `${row.week}::${row._id}`;
 }
 
 interface UploadSummary {
@@ -59,10 +56,10 @@ export interface DataSourceState {
   uploadSummaries: UploadSummary[];
 
   // Actions
-  mergeRts: (rows: RTSDataRow[]) => void;
-  mergeScorecard: (rows: ScorecardRow[]) => void;
-  mergeCdf: (rows: CDFRow[]) => void;
-  mergeDsb: (rows: DSBRow[]) => void;
+  mergeRts: (rows: RTSDataRow[]) => { merged: number; duplicates: number };
+  mergeScorecard: (rows: ScorecardRow[]) => { merged: number; duplicates: number };
+  mergeCdf: (rows: CDFRow[]) => { merged: number; duplicates: number };
+  mergeDsb: (rows: DSBRow[]) => { merged: number; duplicates: number };
 
   clearRts: () => void;
   clearScorecard: () => void;
@@ -100,20 +97,23 @@ export const useDataSourceStore = create<DataSourceState>((set, get) => ({
     const existing = get().rtsRows;
     const existingKeys = new Set(existing.map(rtsMergeKey));
     const toAdd = newRows.filter((r) => !existingKeys.has(rtsMergeKey(r)));
+    const merged = toAdd.length;
+    const duplicates = newRows.length - toAdd.length;
 
-    if (toAdd.length === 0) {
+    if (merged === 0) {
       set({ rtsLastUpload: `${newRows.length} rows (all duplicates)` });
-      return;
+      return { merged: 0, duplicates: newRows.length };
     }
 
-    const merged = [...existing, ...toAdd];
-    const weeks = [...new Set(merged.map((r) => r.normalizedDate ? toISOWeek(r.normalizedDate) : 'Unknown'))].sort();
+    const allRows = [...existing, ...toAdd];
+    const weeks = [...new Set(allRows.map((r) => r.week))].sort();
 
     set({
-      rtsRows: merged,
+      rtsRows: allRows,
       rtsLoadedWeeks: weeks,
-      rtsLastUpload: `${toAdd.length} rows added (${merged.length} total)`,
+      rtsLastUpload: `${toAdd.length} rows added (${allRows.length} total)`,
     });
+    return { merged, duplicates };
   },
 
   // Scorecard merge
@@ -121,22 +121,25 @@ export const useDataSourceStore = create<DataSourceState>((set, get) => ({
     const existing = get().scorecardRows;
     const existingKeys = new Set(existing.map(scorecardMergeKey));
     const toAdd = newRows.filter((r) => !existingKeys.has(scorecardMergeKey(r)));
+    const merged = toAdd.length;
+    const duplicates = newRows.length - toAdd.length;
 
-    if (toAdd.length === 0) {
+    if (merged === 0) {
       set({ scorecardLastUpload: `${newRows[0]?.week ?? 'Week'} uploaded (duplicate, no new data)` });
-      return;
+      return { merged: 0, duplicates: newRows.length };
     }
 
-    const merged = [...existing, ...toAdd];
-    const weeks = [...new Set(merged.map((r) => r.week))].sort();
+    const allRows = [...existing, ...toAdd];
+    const weeks = [...new Set(allRows.map((r) => r.week))].sort();
     const mostRecent = weeks.length > 0 ? weeks[weeks.length - 1] : '';
 
     set({
-      scorecardRows: merged,
+      scorecardRows: allRows,
       scorecardLoadedWeeks: weeks,
       scorecardMostRecentWeek: mostRecent,
       scorecardLastUpload: `${toAdd.length} rows added (${weeks.length} week(s) loaded)`,
     });
+    return { merged, duplicates };
   },
 
   // CDF merge
@@ -144,20 +147,23 @@ export const useDataSourceStore = create<DataSourceState>((set, get) => ({
     const existing = get().cdfRows;
     const existingKeys = new Set(existing.map(cdfMergeKey));
     const toAdd = newRows.filter((r) => !existingKeys.has(cdfMergeKey(r)));
+    const merged = toAdd.length;
+    const duplicates = newRows.length - toAdd.length;
 
-    if (toAdd.length === 0) {
+    if (merged === 0) {
       set({ cdfLastUpload: `${newRows.length} rows (all duplicates)` });
-      return;
+      return { merged: 0, duplicates: newRows.length };
     }
 
-    const merged = [...existing, ...toAdd];
-    const weeks = [...new Set(merged.map((r) => r.week))].sort();
+    const allRows = [...existing, ...toAdd];
+    const weeks = [...new Set(allRows.map((r) => r.week))].sort();
 
     set({
-      cdfRows: merged,
+      cdfRows: allRows,
       cdfLoadedWeeks: weeks,
-      cdfLastUpload: `${toAdd.length} rows added (${merged.length} total)`,
+      cdfLastUpload: `${toAdd.length} rows added (${allRows.length} total)`,
     });
+    return { merged, duplicates };
   },
 
   // DSB merge
@@ -165,22 +171,23 @@ export const useDataSourceStore = create<DataSourceState>((set, get) => ({
     const existing = get().dsbRows;
     const existingKeys = new Set(existing.map(dsbMergeKey));
     const toAdd = newRows.filter((r) => !existingKeys.has(dsbMergeKey(r)));
+    const merged = toAdd.length;
+    const duplicates = newRows.length - toAdd.length;
 
-    if (toAdd.length === 0) {
+    if (merged === 0) {
       set({ dsbLastUpload: `${newRows.length} rows (all duplicates)` });
-      return;
+      return { merged: 0, duplicates: newRows.length };
     }
 
-    const merged = [...existing, ...toAdd];
-    const weeks = [...new Set(
-      merged.map((r) => dateToISOWeek(r.concessionDate || r.deliveryDate))
-    )].sort();
+    const allRows = [...existing, ...toAdd];
+    const weeks = [...new Set(allRows.map((r) => r.week))].sort();
 
     set({
-      dsbRows: merged,
+      dsbRows: allRows,
       dsbLoadedWeeks: weeks,
-      dsbLastUpload: `${toAdd.length} rows added (${merged.length} total)`,
+      dsbLastUpload: `${toAdd.length} rows added (${allRows.length} total)`,
     });
+    return { merged, duplicates };
   },
 
   // Clear actions

@@ -2,13 +2,7 @@ import Papa from 'papaparse';
 import type { RTSDataRow } from './types';
 import { mapCsvHeaders, parseDate, normalizeRTSCode } from '../headerMap';
 
-let rowCounter = 0;
-
-export function resetRowCounter() {
-  rowCounter = 0;
-}
-
-export function parseRTSCSV(csvText: string, fileName: string = 'rts.csv'): RTSDataRow[] {
+export function parseRTSCSV(csvText: string, fileName: string = 'rts.csv', week: string = 'Unknown'): RTSDataRow[] {
   const result = Papa.parse<Record<string, string>>(csvText, {
     header: true,
     skipEmptyLines: true,
@@ -21,7 +15,15 @@ export function parseRTSCSV(csvText: string, fileName: string = 'rts.csv'): RTSD
   const headers = result.meta?.fields || [];
   const mapping = mapCsvHeaders(headers);
 
-  if (Object.keys(mapping).length === 0) return [];
+  if (Object.keys(mapping).length === 0) {
+    throw new Error(`File "${fileName}" has no recognized RTS headers. Make sure the CSV contains columns like Delivery Associate, Tracking ID, Transporter ID, and RTS Code.`);
+  }
+
+  const RTS_REQUIRED = ['deliveryAssociate', 'trackingId', 'transporterId', 'rtsCode'];
+  const missing = RTS_REQUIRED.filter(k => !(k in mapping));
+  if (missing.length > 0) {
+    throw new Error(`File "${fileName}" is missing required RTS columns: ${missing.join(', ')}. Found headers: ${headers.join(', ')}`);
+  }
 
   return result.data.map((row, idx) => {
     const getValue = (key: string): string => {
@@ -31,9 +33,8 @@ export function parseRTSCSV(csvText: string, fileName: string = 'rts.csv'): RTSD
       return val != null && typeof val === 'string' ? val : '';
     };
 
-    const globalIdx = rowCounter++;
     return {
-      _id: `${fileName}-${idx}-${globalIdx}`,
+      _id: `${fileName}-${fileName.split('.').slice(0, -1).join('.')}-${idx}`,
       deliveryAssociate: getValue('deliveryAssociate'),
       trackingId: getValue('trackingId'),
       transporterId: getValue('transporterId'),
@@ -44,6 +45,7 @@ export function parseRTSCSV(csvText: string, fileName: string = 'rts.csv'): RTSD
       plannedDeliveryDate: getValue('plannedDeliveryDate'),
       serviceArea: getValue('serviceArea'),
       normalizedDate: parseDate(getValue('plannedDeliveryDate')),
+      week,
     };
   });
 }
