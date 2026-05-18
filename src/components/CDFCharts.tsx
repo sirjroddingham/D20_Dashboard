@@ -18,7 +18,7 @@ export function CDFCategoryChart({ categoryTotals }: CDFCategoryChartProps) {
       CDF_DEFECT_COLUMNS
         .filter(c => (categoryTotals[c] || 0) > 0)
         .map(c => ({
-          name: (CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c).split(' ').slice(0, 3).join(' '),
+          name: CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c,
           value: categoryTotals[c] || 0,
           _key: c,
         })),

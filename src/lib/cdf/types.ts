@@ -13,6 +13,7 @@ export interface CDFRow {
   receivedWrongItem: boolean;
   feedbackDetails: string;
   defectCategories: string[];
+  impactsDsb: boolean;
 }
 
 export const CDF_DEFECT_COLUMNS = [
@@ -29,8 +30,8 @@ export type CDFDefectColumn = (typeof CDF_DEFECT_COLUMNS)[number];
 export const CDF_DEFECT_LABELS: Record<CDFDefectColumn, string> = {
   mishandledPackage: 'Mishandled Package',
   unprofessional: 'Unprofessional',
-  didNotFollowInstructions: 'Instructions',
-  deliveredToWrongAddress: 'Wrong Address',
-  neverReceivedDelivery: 'Never Received',
-  receivedWrongItem: 'Wrong Item',
+  didNotFollowInstructions: 'Did Not Follow Instructions',
+  deliveredToWrongAddress: 'Delivered to Wrong Address',
+  neverReceivedDelivery: 'Never Received Delivery',
+  receivedWrongItem: 'Received Wrong Item',
 };

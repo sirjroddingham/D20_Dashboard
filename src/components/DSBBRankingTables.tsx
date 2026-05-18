@@ -47,8 +47,8 @@ export function DSBBottomPerformersTable({ summaries }: DSBRankingTablesProps) {
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium w-8">#</th>
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
               {DSB_DEFECT_COLUMNS.map(c => (
-                <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium" title={DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS]}>
-                  {(DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c).split(' ').slice(-1)[0]}
+                 <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium">
+                  {DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c}
                 </th>
               ))}
               <th className="px-2 sm:px-3 py-1.5 text-right font-medium">Total</th>
@@ -104,8 +104,8 @@ export function DSBDefectFreeTable({ summaries }: DSBRankingTablesProps) {
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium w-8">#</th>
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
               {DSB_DEFECT_COLUMNS.map(c => (
-                <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium" title={DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS]}>
-                  {(DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c).split(' ').slice(-1)[0]}
+                <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium">
+                  {DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c}
                 </th>
               ))}
               <th className="px-2 sm:px-3 py-1.5 text-right font-medium">Total</th>

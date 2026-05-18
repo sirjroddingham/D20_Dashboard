@@ -70,6 +70,9 @@ export function parseDSB(csvText: string): DSBRow[] {
     if (incorrectScanUnattended) defectCategories.push('incorrectScanUnattended');
     if (noPodOnDelivery) defectCategories.push('noPodOnDelivery');
     if (scannedNotDeliveredNotReturned) defectCategories.push('scannedNotDeliveredNotReturned');
+    // Every row in this file is a concession event. Rows with no specific flag
+    // category still count — bucket them as 'other'.
+    if (defectCategories.length === 0) defectCategories.push('other');
 
     return {
       _id: `${getVal(daIdx)}::${getVal(trackingIdx)}::${idx}`,

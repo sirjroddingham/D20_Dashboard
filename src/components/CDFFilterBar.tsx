@@ -19,7 +19,8 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
     filters.categories.length > 0 ||
     filters.dateStart ||
     filters.dateEnd ||
-    filters.search;
+    filters.search ||
+    (filters.impactsDsb && filters.impactsDsb !== 'all');
 
   const toggleCategory = useCallback(
     (cat: string) => {
@@ -38,6 +39,7 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
       dateStart: '',
       dateEnd: '',
       search: '',
+      impactsDsb: 'all',
     });
   }, [onFilterChange]);
 
@@ -48,6 +50,7 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
     if (filters.dateStart) count++;
     if (filters.dateEnd) count++;
     if (filters.search) count++;
+    if (filters.impactsDsb && filters.impactsDsb !== 'all') count++;
     return count;
   }, [filters]);
 
@@ -133,9 +136,8 @@ export default function CDFFilterBar({ filters, rows, dateRange, onFilterChange 
                     ? 'bg-rts-active-bg text-rts-active-text'
                     : 'text-text-subtle hover:text-text-heading'
                 }`}
-                title={CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS]}
               >
-                {CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS].split(' ').slice(-1)[0]}
+                {CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS]}
               </motion.button>
             ))}
           </div>

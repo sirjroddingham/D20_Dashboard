@@ -71,6 +71,7 @@ export function parseCDF(csvText: string, week: string = 'Unknown'): CDFRow[] {
       receivedWrongItem,
       feedbackDetails,
       defectCategories,
+      impactsDsb: false,
     };
   });
 }

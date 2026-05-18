@@ -12,6 +12,7 @@ const DSB_DEFECT_COLORS: Record<string, string> = {
   incorrectScanUnattended: '#34a853',
   noPodOnDelivery: '#4285f4',
   scannedNotDeliveredNotReturned: '#9c27b0',
+  other: '#607d8b',
 };
 
 interface DSBCategoryChartProps {
@@ -26,7 +27,7 @@ export function DSBCategoryChart({ categoryTotals }: DSBCategoryChartProps) {
       DSB_DEFECT_COLUMNS
         .filter(c => (categoryTotals[c] || 0) > 0)
         .map(c => ({
-          name: (DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c).split(' ').slice(0, 3).join(' '),
+          name: DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c,
           value: categoryTotals[c] || 0,
           _key: c,
         })),
@@ -129,6 +130,7 @@ export function DSBCategoryChart({ categoryTotals }: DSBCategoryChartProps) {
             option={option}
             style={chartStyle}
             opts={chartOpts}
+            notMerge={true}
           />
         </div>
       </div>
@@ -149,15 +151,15 @@ export function DSBDefectsByDayChart({ rows }: DSBDefectsByDayChartProps) {
     const dateCounts = new Map<string, { counts: Record<string, number>; total: number }>();
 
     for (const row of rows) {
-      const dateStr = (row.concessionDate || row.deliveryDate)?.slice(0, 10);
+      // Use concessionDate as the authoritative date for DSB rows
+      const dateStr = row.concessionDate?.slice(0, 10);
       if (!dateStr) continue;
       const existing = dateCounts.get(dateStr) || { counts: {}, total: 0 };
 
-      for (const col of DSB_DEFECT_COLUMNS) {
-        if (row[col as keyof DSBRow] === true) {
-          existing.counts[col] = (existing.counts[col] || 0) + 1;
-          existing.total += 1;
-        }
+      // Count each row once per category in defectCategories (includes 'other')
+      for (const cat of row.defectCategories) {
+        existing.counts[cat] = (existing.counts[cat] || 0) + 1;
+        existing.total += 1;
       }
 
       dateCounts.set(dateStr, existing);

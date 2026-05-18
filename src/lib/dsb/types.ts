@@ -27,6 +27,7 @@ export const DSB_DEFECT_COLUMNS = [
   'incorrectScanUnattended',
   'noPodOnDelivery',
   'scannedNotDeliveredNotReturned',
+  'other',
 ] as const;
 
 export type DSBDefectColumn = (typeof DSB_DEFECT_COLUMNS)[number];
@@ -34,8 +35,9 @@ export type DSBDefectColumn = (typeof DSB_DEFECT_COLUMNS)[number];
 export const DSB_DEFECT_LABELS: Record<DSBDefectColumn, string> = {
   simultaneousDeliveries: 'Simultaneous Deliveries',
   deliveredOver50m: 'Delivered > 50 m',
-  incorrectScanAttended: 'Incorrect Scan Usage - Attended Delivery',
-  incorrectScanUnattended: 'Incorrect Scan Usage - Unattended Delivery',
+  incorrectScanAttended: 'Incorrect Scan (Attended)',
+  incorrectScanUnattended: 'Incorrect Scan (Unattended)',
   noPodOnDelivery: 'No POD on Delivery',
   scannedNotDeliveredNotReturned: 'Scanned - Not Delivered - Not Returned',
+  other: 'Other / Uncategorized',
 };

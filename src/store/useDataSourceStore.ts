@@ -21,7 +21,7 @@ function cdfMergeKey(row: CDFRow): string {
 
 function dsbMergeKey(row: DSBRow): string {
   const week = dateToISOWeek(row.concessionDate || row.deliveryDate);
-  return `${week}::${row.deliveryAssociate}`;
+  return `${week}::${row.trackingId}`;
 }
 
 interface UploadSummary {

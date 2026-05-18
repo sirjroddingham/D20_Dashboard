@@ -14,7 +14,8 @@ const COLUMNS = [
   { key: 'deliveryAssociateName', label: 'Delivery Associate', width: 'w-[180px]' },
   { key: 'trackingId', label: 'Tracking ID', width: 'w-[150px]' },
   { key: 'defectCategories', label: 'Defect Category', width: 'w-[140px]' },
-  { key: 'deliveryType', label: 'Delivery Type', width: 'w-[140px]' },
+  { key: 'deliveryType', label: 'Delivery Type', width: 'w-[120px]' },
+  { key: 'impactsDsb', label: 'Impacts DSB', width: 'w-[110px]' },
   { key: 'concessionDate', label: 'Concession Date', width: 'w-[160px]' },
 ];
 
@@ -90,6 +91,9 @@ export default function DSBDetailTable({ rows }: DSBDetailTableProps) {
           if (col.key === 'defectCategories') {
             const val = row.defectCategories.map(c => DSB_DEFECT_LABELS[c as keyof typeof DSB_DEFECT_LABELS] || c).join('; ');
             return '"' + val.replace(/"/g, '""') + '"';
+          }
+          if (col.key === 'impactsDsb') {
+            return row.impactsDsb ? '"Y"' : '"N"';
           }
           const val = String(row[col.key as keyof DSBRow] ?? '');
           return '"' + val.replace(/"/g, '""') + '"';
@@ -231,12 +235,23 @@ export default function DSBDetailTable({ rows }: DSBDetailTableProps) {
                             color: DSB_DEFECT_COLORS[cat] || '#888',
                           }}
                         >
-                          {(DSB_DEFECT_LABELS[cat as keyof typeof DSB_DEFECT_LABELS] || cat).split(' ').slice(-1)[0]}
+                          {DSB_DEFECT_LABELS[cat as keyof typeof DSB_DEFECT_LABELS] || cat}
                         </span>
                       ))}
                     </div>
                   </td>
                   <td className="px-4 py-2 text-text-subtle">{row.deliveryType || '-'}</td>
+                  <td className="px-4 py-2 text-center">
+                    {row.impactsDsb ? (
+                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-red-500/20 text-red-400">
+                        Y
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-surface-2 text-text-faint">
+                        N
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-2 text-text-subtle">{formatDate(row.concessionDate)}</td>
                 </motion.tr>
               ))}

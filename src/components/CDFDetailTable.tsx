@@ -14,6 +14,7 @@ const COLUMNS = [
   { key: 'deliveryAssociateName', label: 'Delivery Associate', width: 'w-[180px]' },
   { key: 'trackingId', label: 'Tracking ID', width: 'w-[150px]' },
   { key: 'defectCategories', label: 'Defect Category', width: 'w-[140px]' },
+  { key: 'impactsDsb', label: 'Impacts DSB', width: 'w-[90px]' },
   { key: 'feedbackDetails', label: 'Feedback Details', width: 'w-[160px]' },
   { key: 'deliveryDate', label: 'Delivery Date', width: 'w-[160px]' },
 ];
@@ -64,6 +65,10 @@ export default function CDFDetailTable({ rows }: CDFDetailTableProps) {
         const comparison = aStr.localeCompare(bStr);
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       }
+      if (sortConfig.key === 'impactsDsb') {
+        const comparison = Number(a.impactsDsb) - Number(b.impactsDsb);
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      }
       const comparison = String(aVal).localeCompare(String(bVal));
       return sortConfig.direction === 'asc' ? comparison : -comparison;
     });
@@ -90,6 +95,9 @@ export default function CDFDetailTable({ rows }: CDFDetailTableProps) {
           if (col.key === 'defectCategories') {
             const val = row.defectCategories.map(c => CDF_DEFECT_LABELS[c as CDFDefectColumn] || c).join('; ');
             return '"' + val.replace(/"/g, '""') + '"';
+          }
+          if (col.key === 'impactsDsb') {
+            return '"' + (row.impactsDsb ? 'Y' : 'N') + '"';
           }
           const val = String(row[col.key as keyof CDFRow] ?? '');
           return '"' + val.replace(/"/g, '""') + '"';
@@ -231,10 +239,13 @@ export default function CDFDetailTable({ rows }: CDFDetailTableProps) {
                             color: CDF_DEFECT_COLORS[cat] || '#888',
                           }}
                         >
-                          {(CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS] || cat).split(' ').slice(-1)[0]}
+                          {CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS] || cat}
                         </span>
                       ))}
                     </div>
+                  </td>
+                  <td className="px-4 py-2 text-center text-text-subtle">
+                    {row.impactsDsb ? 'Y' : 'N'}
                   </td>
                   <td className="px-4 py-2 text-text-subtle max-w-[200px] truncate" title={row.feedbackDetails}>
                     {row.feedbackDetails || '-'}

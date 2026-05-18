@@ -12,6 +12,7 @@ import {
   useDefectFreeEmployees,
   type CDFFilterState,
 } from '../store/useCDFStore';
+import type { CDFRow } from '../lib/cdf/types';
 import type { DSBRow } from '../lib/dsb/types';
 import { DSB_DEFECT_COLUMNS, DSB_DEFECT_LABELS } from '../lib/dsb/types';
 import { dateToISOWeek } from '../lib/rts/helpers';
@@ -31,6 +32,7 @@ const defaultFilters: CDFFilterState = {
   dateStart: '',
   dateEnd: '',
   search: '',
+  impactsDsb: 'all',
 };
 
 const defaultDSBFilters: DSBFilterState = {
@@ -39,6 +41,7 @@ const defaultDSBFilters: DSBFilterState = {
   dateStart: '',
   dateEnd: '',
   search: '',
+  impactsDsb: 'all',
 };
 
 interface DSBEmployeeSummary {
@@ -73,8 +76,9 @@ function useFilteredDSBRows(rows: DSBRow[], selectedWeek: string, filters: DSBFi
     if (filters.dateStart) {
       const start = new Date(filters.dateStart);
       filtered = filtered.filter(r => {
-        const d = r.concessionDate || r.deliveryDate;
-        if (!d) return false;
+        // concessionDate is authoritative; deliveryDate only used when no concessionDate
+        const d = r.concessionDate;
+        if (!d) return true; // no concession date — don't exclude
         return new Date(d) >= start;
       });
     }
@@ -83,10 +87,15 @@ function useFilteredDSBRows(rows: DSBRow[], selectedWeek: string, filters: DSBFi
       const end = new Date(filters.dateEnd);
       end.setDate(end.getDate() + 1);
       filtered = filtered.filter(r => {
-        const d = r.concessionDate || r.deliveryDate;
-        if (!d) return false;
+        const d = r.concessionDate;
+        if (!d) return true;
         return new Date(d) < end;
       });
+    }
+
+    if (filters.impactsDsb !== 'all') {
+      const wantImpact = filters.impactsDsb === 'Y';
+      filtered = filtered.filter(r => r.impactsDsb === wantImpact);
     }
 
     if (filters.search) {
@@ -123,8 +132,8 @@ function useDSBEmployeeSummaries(rows: DSBRow[]): DSBEmployeeSummary[] {
 
       const emp = empMap.get(r.deliveryAssociate)!;
       emp.trackingIds.push(r.trackingId);
-      DSB_DEFECT_COLUMNS.forEach(c => {
-        if (r[c as keyof DSBRow] === true) emp.categories[c]++;
+      r.defectCategories.forEach(c => {
+        emp.categories[c] = (emp.categories[c] || 0) + 1;
       });
       emp.totalDefects += r.defectCategories.length;
     });
@@ -140,8 +149,10 @@ function useDSBCategoryTotals(rows: DSBRow[]): Record<string, number> {
     const totals: Record<string, number> = {};
     DSB_DEFECT_COLUMNS.forEach(c => { totals[c] = 0; });
     rows.forEach(r => {
-      DSB_DEFECT_COLUMNS.forEach(c => {
-        if (r[c as keyof DSBRow] === true) totals[c]++;
+      // Use defectCategories (includes 'other' for unflagged rows) so every
+      // row is counted exactly once in its assigned category.
+      r.defectCategories.forEach(c => {
+        totals[c] = (totals[c] || 0) + 1;
       });
     });
     return totals;
@@ -153,7 +164,9 @@ function useDSBDateRange(rows: DSBRow[]): { min: string; max: string } {
     let min = '';
     let max = '';
     rows.forEach(r => {
-      const d = r.concessionDate || r.deliveryDate;
+      // Use concessionDate as the authoritative date; deliveryDate can precede the
+      // concession by weeks and must not anchor the date range bounds.
+      const d = r.concessionDate;
       if (!d) return;
       const dt = new Date(d);
       if (isNaN(dt.getTime())) return;
@@ -172,7 +185,6 @@ export default function CDFSB() {
     cdfRows,
     cdfLoadedWeeks,
     cdfLastUpload,
-    mostRecentWeek,
     scorecardRows,
   } = useCDFData();
 
@@ -183,25 +195,22 @@ export default function CDFSB() {
   const clearCdf = useDataSourceStore(s => s.clearCdf);
   const clearDsb = useDataSourceStore(s => s.clearDsb);
 
-  const [selectedWeek, setSelectedWeek] = useState<string>(mostRecentWeek);
+  const [selectedWeek, setSelectedWeek] = useState<string>('__all__');
 
   useEffect(() => {
-    if (mostRecentWeek && mostRecentWeek !== selectedWeek) {
+    if (cdfLoadedWeeks.length > 0 && selectedWeek !== '__all__') {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedWeek(mostRecentWeek);
+      setSelectedWeek('__all__');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally sync only on mostRecentWeek change
-  }, [mostRecentWeek]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally sync only on cdfLoadedWeeks change
+  }, [cdfLoadedWeeks]);
 
-  const [dsbSelectedWeek, setDsbSelectedWeek] = useState<string>(
-    dsbLoadedWeeks.length > 0 ? dsbLoadedWeeks[dsbLoadedWeeks.length - 1] : ''
-  );
+  const [dsbSelectedWeek, setDsbSelectedWeek] = useState<string>('__all__');
 
   useEffect(() => {
-    if (dsbLoadedWeeks.length > 0) {
-      const latest = dsbLoadedWeeks[dsbLoadedWeeks.length - 1];
+    if (dsbLoadedWeeks.length > 0 && dsbSelectedWeek !== '__all__') {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDsbSelectedWeek(latest);
+      setDsbSelectedWeek('__all__');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally sync only on dsbLoadedWeeks change
   }, [dsbLoadedWeeks]);
@@ -218,11 +227,19 @@ export default function CDFSB() {
     setDsbFilters(prev => ({ ...prev, ...partial }));
   };
 
-  const filteredRows = useFilteredRows(cdfRows, selectedWeek, filters);
+  const enrichedCdfRows = useMemo<CDFRow[]>(() => {
+    const dsbTrackingIds = new Set(dsbRows.map(r => r.trackingId));
+    return cdfRows.map(r => ({
+      ...r,
+      impactsDsb: dsbTrackingIds.has(r.trackingId),
+    }));
+  }, [cdfRows, dsbRows]);
+
+  const filteredRows = useFilteredRows(enrichedCdfRows, selectedWeek, filters);
   const employeeSummaries = useEmployeeSummaries(filteredRows, scorecardRows, selectedWeek);
-  const defectFreeSummaries = useDefectFreeEmployees(cdfRows, scorecardRows);
+  const defectFreeSummaries = useDefectFreeEmployees(enrichedCdfRows, scorecardRows);
   const categoryTotals = useCategoryTotals(filteredRows);
-  const dateRange = useDateRange(cdfRows);
+  const dateRange = useDateRange(enrichedCdfRows);
 
   const weekRows = filteredRows;
 
@@ -230,10 +247,19 @@ export default function CDFSB() {
   const filteredDSBRows = useFilteredDSBRows(dsbRows, dsbSelectedWeek, dsbFilters);
   const dsbEmployeeSummaries = useDSBEmployeeSummaries(filteredDSBRows);
   const dsbCategoryTotals = useDSBCategoryTotals(filteredDSBRows);
-  const dsbDateRange = useDSBDateRange(dsbRows);
+  // Date range bounds follow the selected week (no other filters), so the date
+  // inputs stay anchored to the visible week rather than the full dataset.
+  const dsbWeekRows = useMemo(() => {
+    if (!dsbSelectedWeek || dsbSelectedWeek === '__all__') return dsbRows;
+    return dsbRows.filter(r => {
+      const week = dateToISOWeek(r.concessionDate || r.deliveryDate);
+      return week === dsbSelectedWeek;
+    });
+  }, [dsbRows, dsbSelectedWeek]);
+  const dsbDateRange = useDSBDateRange(dsbWeekRows);
 
 
-  const hasData = cdfRows.length > 0;
+  const hasData = enrichedCdfRows.length > 0;
   const hasDSBData = dsbRows.length > 0;
 
   const allWeeksOption = '__all__';
@@ -345,6 +371,7 @@ export default function CDFSB() {
                   <option value={allWeeksOption}>All Weeks ({cdfLoadedWeeks.length})</option>
                 )}
               </select>
+
               <span className="pill pill-default">
                 {weekRows.length} rows
               </span>
@@ -393,6 +420,24 @@ export default function CDFSB() {
                       <option value={allWeeksOption}>All Weeks ({dsbLoadedWeeks.length})</option>
                     )}
                   </select>
+                  <span className="text-xs font-medium text-text-subtle">Impacts DSB:</span>
+                  <div className="flex gap-1">
+                    {(['all', 'Y', 'N'] as const).map(val => (
+                      <motion.button
+                        key={val}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setDsbFilters(prev => ({ ...prev, impactsDsb: val }))}
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
+                          dsbFilters.impactsDsb === val
+                            ? 'bg-rts-active-bg text-rts-active-text'
+                            : 'text-text-subtle hover:text-text-heading'
+                        }`}
+                      >
+                        {val === 'all' ? 'All' : val}
+                      </motion.button>
+                    ))}
+                  </div>
                   <span className="pill pill-default">
                     {filteredDSBRows.length} rows
                   </span>

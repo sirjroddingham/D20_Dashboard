@@ -53,7 +53,7 @@ export function BottomPerformersTable({ summaries }: CDFRankingTablesProps) {
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
               {CDF_DEFECT_COLUMNS.map(c => (
                 <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium" title={CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS]}>
-                  {(CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c).split(' ').slice(-1)[0]}
+                  {(CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c)}
                 </th>
               ))}
               <th className="px-2 sm:px-3 py-1.5 text-right font-medium">Total</th>
@@ -131,7 +131,7 @@ export function TopPerformersTable({ summaries }: CDFRankingTablesProps) {
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
               {CDF_DEFECT_COLUMNS.map(c => (
                 <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium" title={CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS]}>
-                  {(CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c).split(' ').slice(-1)[0]}
+                  {(CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c)}
                 </th>
               ))}
               <th className="px-2 sm:px-3 py-1.5 text-right font-medium">Total</th>
@@ -209,7 +209,7 @@ export function DefectFreeTable({ summaries }: CDFRankingTablesProps) {
               <th className="px-2 sm:px-3 py-1.5 text-left font-medium">Name</th>
               {CDF_DEFECT_COLUMNS.map(c => (
                 <th key={c} className="px-2 sm:px-3 py-1.5 text-center font-medium" title={CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS]}>
-                  {(CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c).split(' ').slice(-1)[0]}
+                  {(CDF_DEFECT_LABELS[c as keyof typeof CDF_DEFECT_LABELS] || c)}
                 </th>
               ))}
               <th className="px-2 sm:px-3 py-1.5 text-right font-medium">Total</th>

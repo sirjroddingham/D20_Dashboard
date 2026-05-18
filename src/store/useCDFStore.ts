@@ -11,6 +11,7 @@ interface CDFFilterState {
   dateStart: string;
   dateEnd: string;
   search: string;
+  impactsDsb: string;
 }
 
 interface EmployeeSummary {
@@ -85,6 +86,11 @@ export function useFilteredRows(rows: CDFRow[], selectedWeek: string, filters: C
         r.feedbackDetails.toLowerCase().includes(term) ||
         r.defectCategories.some(c => CDF_DEFECT_LABELS[c as CDFDefectColumn]?.toLowerCase().includes(term))
       );
+    }
+
+    if (filters.impactsDsb && filters.impactsDsb !== 'all') {
+      const isImpacts = filters.impactsDsb === 'Y';
+      filtered = filtered.filter(r => r.impactsDsb === isImpacts);
     }
 
     return filtered;
