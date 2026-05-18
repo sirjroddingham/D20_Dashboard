@@ -41,3 +41,13 @@ export const DSB_DEFECT_LABELS: Record<DSBDefectColumn, string> = {
   scannedNotDeliveredNotReturned: 'Scanned - Not Delivered - Not Returned',
   other: 'Other / Uncategorized',
 };
+
+export const DSB_DEFECT_SHORT_LABELS: Record<DSBDefectColumn, string> = {
+  simultaneousDeliveries: 'Simul. Deliveries',
+  deliveredOver50m: '>50m',
+  incorrectScanAttended: 'Scan (Attended)',
+  incorrectScanUnattended: 'Scan (Unattended)',
+  noPodOnDelivery: 'No POD',
+  scannedNotDeliveredNotReturned: 'Scanned/Not Del.',
+  other: 'Other',
+};

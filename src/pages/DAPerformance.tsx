@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
+import { FileText, BarChart3, Trash2 } from 'lucide-react';
 import { useDAPerformanceStore, STANDARD_SAFETY_WEIGHT, STANDARD_QUALITY_WEIGHT } from '../store/useDAPerformanceStore';
 import {
   PERFECT_OVERALL,
   PERFECT_SAFETY,
   PERFECT_QUALITY,
 } from '../lib/scorecard/parseScorecard';
-import DataUpload from '../components/DataUpload';
 import RankingTable, { NoSafetyDataTable, TrailingTable } from '../components/RankingTable';
 import { ScoreDistributionChart } from '../components/ScoreDistributionChart';
 
@@ -252,13 +250,6 @@ export default function DAPerformance() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            to="/data"
-            className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
-            title="Upload data"
-          >
-            <Database className="h-4 w-4" />
-          </Link>
           {hasData && (
             <button
               type="button"
@@ -269,7 +260,6 @@ export default function DAPerformance() {
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <DataUpload compact />
         </div>
       </div>
 
@@ -293,18 +283,8 @@ export default function DAPerformance() {
               </motion.div>
               <h2 className="mb-2 text-2xl font-bold text-text-heading">DA Performance Rankings</h2>
               <p className="mb-8 max-w-md text-center text-sm text-text-subtle">
-                Upload one or more Scorecard CSV files to view overall, safety, and quality rankings with trailing averages.
+                Load data on the Data Management page to view overall, safety, and quality rankings with trailing averages.
               </p>
-               <div className="w-full max-w-lg">
-                 <DataUpload />
-               </div>
-               <Link
-                 to="/data"
-                 className="mt-4 flex items-center gap-1.5 text-sm text-text-body hover:text-text-subtle transition-colors"
-               >
-                 <Database className="h-4 w-4" />
-                 Manage all data uploads
-               </Link>
             </div>
           </motion.div>
         ) : (

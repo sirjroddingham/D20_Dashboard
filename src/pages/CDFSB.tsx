@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { FileText, BarChart3, Trash2, Database } from 'lucide-react';
+import { FileText, BarChart3, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDataSourceStore } from '../store/useDataSourceStore';
 import {
@@ -16,7 +15,6 @@ import type { CDFRow } from '../lib/cdf/types';
 import type { DSBRow } from '../lib/dsb/types';
 import { DSB_DEFECT_COLUMNS, DSB_DEFECT_LABELS } from '../lib/dsb/types';
 import { dateToISOWeek } from '../lib/rts/helpers';
-import DataUpload from '../components/DataUpload';
 import CDFFilterBar from '../components/CDFFilterBar';
 import CDFDetailTable from '../components/CDFDetailTable';
 import { BottomPerformersTable, DefectFreeTable } from '../components/CDFRankingTables';
@@ -283,13 +281,6 @@ export default function CDFSB() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            to="/data"
-            className="cursor-pointer rounded p-1.5 text-text-body transition-colors hover:bg-surface-hover hover:text-text-subtle"
-            title="Upload data"
-          >
-            <Database className="h-4 w-4" />
-          </Link>
           {hasData && (
             <button
               type="button"
@@ -310,7 +301,6 @@ export default function CDFSB() {
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <DataUpload compact />
         </div>
       </div>
 
@@ -334,18 +324,8 @@ export default function CDFSB() {
               </motion.div>
               <h2 className="mb-2 text-2xl font-bold text-text-heading">CDF Defect Dashboard</h2>
               <p className="mb-8 max-w-md text-center text-sm text-text-subtle">
-                Upload one or more CDF CSV files to analyze customer delivery feedback defects, employee rankings, and DPMO metrics.
+                Load data on the Data Management page to analyze customer delivery feedback defects, employee rankings, and DPMO metrics.
               </p>
-              <div className="w-full max-w-lg">
-                <DataUpload />
-              </div>
-              <Link
-                to="/data"
-                className="mt-4 flex items-center gap-1.5 text-sm text-text-body hover:text-text-subtle transition-colors"
-              >
-                <Database className="h-4 w-4" />
-                Manage all data uploads
-              </Link>
             </div>
           </motion.div>
         ) : (

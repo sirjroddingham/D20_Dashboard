@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronUp, ChevronDown, ChevronsUp, Download } from 'lucide-react';
 import type { DSBRow } from '../lib/dsb/types';
-import { DSB_DEFECT_LABELS } from '../lib/dsb/types';
+import { DSB_DEFECT_LABELS, DSB_DEFECT_SHORT_LABELS } from '../lib/dsb/types';
 import { DSB_DEFECT_COLORS } from './DSBCharts';
 
 interface SortConfig {
@@ -234,8 +234,8 @@ export default function DSBDetailTable({ rows }: DSBDetailTableProps) {
                             backgroundColor: (DSB_DEFECT_COLORS[cat] || '#888') + '33',
                             color: DSB_DEFECT_COLORS[cat] || '#888',
                           }}
-                        >
-                          {DSB_DEFECT_LABELS[cat as keyof typeof DSB_DEFECT_LABELS] || cat}
+                         >
+                           {DSB_DEFECT_SHORT_LABELS[cat as keyof typeof DSB_DEFECT_SHORT_LABELS] || cat}
                         </span>
                       ))}
                     </div>

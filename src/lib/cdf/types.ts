@@ -35,3 +35,12 @@ export const CDF_DEFECT_LABELS: Record<CDFDefectColumn, string> = {
   neverReceivedDelivery: 'Never Received Delivery',
   receivedWrongItem: 'Received Wrong Item',
 };
+
+export const CDF_DEFECT_SHORT_LABELS: Record<CDFDefectColumn, string> = {
+  mishandledPackage: 'Mishandled',
+  unprofessional: 'Unprofessional',
+  didNotFollowInstructions: 'No Follow Instr.',
+  deliveredToWrongAddress: 'Wrong Address',
+  neverReceivedDelivery: 'Never Received',
+  receivedWrongItem: 'Wrong Item',
+};

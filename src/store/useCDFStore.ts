@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useDataSourceStore } from './useDataSourceStore';
 import { useDAPerformanceStore } from './useDAPerformanceStore';
 import type { CDFRow } from '../lib/cdf/types';
-import { CDF_DEFECT_COLUMNS, CDF_DEFECT_LABELS } from '../lib/cdf/types';
+import { CDF_DEFECT_COLUMNS, CDF_DEFECT_LABELS, CDF_DEFECT_SHORT_LABELS } from '../lib/cdf/types';
 import type { CDFDefectColumn } from '../lib/cdf/types';
 
 interface CDFFilterState {
@@ -248,5 +248,5 @@ export const CDF_DEFECT_COLORS: Record<string, string> = {
   receivedWrongItem: '#9c27b0',
 };
 
-export { CDF_DEFECT_COLUMNS, CDF_DEFECT_LABELS, type EmployeeSummary };
+export { CDF_DEFECT_COLUMNS, CDF_DEFECT_LABELS, CDF_DEFECT_SHORT_LABELS, type EmployeeSummary };
 export type { CDFFilterState };

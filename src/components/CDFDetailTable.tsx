@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronUp, ChevronDown, ChevronsUp, Download } from 'lucide-react';
 import type { CDFRow } from '../lib/cdf/types';
 import type { CDFDefectColumn } from '../lib/cdf/types';
-import { CDF_DEFECT_LABELS, CDF_DEFECT_COLORS } from '../store/useCDFStore';
+import { CDF_DEFECT_LABELS, CDF_DEFECT_SHORT_LABELS, CDF_DEFECT_COLORS } from '../store/useCDFStore';
 
 interface SortConfig {
   key: string;
@@ -130,7 +130,7 @@ export default function CDFDetailTable({ rows }: CDFDetailTableProps) {
     >
       <div className="border-b border-surface-3 px-5 py-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-text-subtle">Defect Details</h3>
+          <h3 className="text-sm font-medium text-text-subtle">CDF Defect Details</h3>
           <div className="flex items-center gap-3">
             <span className="rounded-full surface-elevated px-2.5 py-0.5 text-xs font-medium text-text-subtle">
               {sortedData.length} records
@@ -232,14 +232,14 @@ export default function CDFDetailTable({ rows }: CDFDetailTableProps) {
                       {row.defectCategories.map(cat => (
                         <span
                           key={cat}
-                          title={CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS]}
-                          className="pill"
-                          style={{
-                            backgroundColor: (CDF_DEFECT_COLORS[cat] || '#888') + '33',
-                            color: CDF_DEFECT_COLORS[cat] || '#888',
-                          }}
-                        >
-                          {CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS] || cat}
+                           title={CDF_DEFECT_LABELS[cat as keyof typeof CDF_DEFECT_LABELS]}
+                           className="pill"
+                           style={{
+                             backgroundColor: (CDF_DEFECT_COLORS[cat] || '#888') + '33',
+                             color: CDF_DEFECT_COLORS[cat] || '#888',
+                           }}
+                         >
+                           {CDF_DEFECT_SHORT_LABELS[cat as keyof typeof CDF_DEFECT_SHORT_LABELS] || cat}
                         </span>
                       ))}
                     </div>
